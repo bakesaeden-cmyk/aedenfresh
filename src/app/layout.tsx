@@ -36,13 +36,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: "Aeden Fresh — Fresh From the World. Fresh to Your Table.",
       description:
         "Premium global fruit, local produce, artisan bakery, and Fresh Commerce—beautifully curated in Kochi.",
-      images: [{ url: "/og-marketing.png", width: 1734, height: 907, alt: "Aeden Fresh — Fresh from the world. Fresh to your table." }],
+      images: [{ url: "/opengraph.jpg", width: 1280, height: 720, alt: "Aeden Fresh — Fresh from the world. Fresh to your table." }],
     },
     twitter: {
       card: "summary_large_image",
       title: "Aeden Fresh — Fresh From the World. Fresh to Your Table.",
       description: "Premium fresh grocery and flexible Fresh Commerce in Kochi.",
-      images: ["/og-marketing.png"],
+      images: ["/opengraph.jpg"],
     },
   };
 }
