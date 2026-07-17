@@ -15,11 +15,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(`${protocol}://${host}`),
     title: {
-    default: "Aeden Fresh — Feel Good Food, Made Around You",
+    default: "Aeden Fresh — Fresh From the World. Fresh to Your Table.",
     template: "%s · Aeden Fresh",
     },
     description:
-      "Build a personalised fresh bowl, see live nutrition, schedule flexible deliveries, and order on web or WhatsApp from Aeden Fresh in Kochi.",
+      "Kerala's premium fresh grocery experience: imported fruit, local produce, artisan bakery, premium dairy, and Fresh Commerce in Kochi.",
     keywords: [
       "fresh bowls Kochi",
       "healthy food delivery Kochi",
@@ -33,16 +33,16 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "en_IN",
       siteName: "Aeden Fresh",
-      title: "Aeden Fresh — Feel Good Food, Made Around You",
+      title: "Aeden Fresh — Fresh From the World. Fresh to Your Table.",
       description:
-        "Personalised bowls, honest nutrition, and recurring fresh deliveries that move with your week.",
-      images: [{ url: "/og.png", width: 1731, height: 909, alt: "Aeden Fresh — Feel good food, made around you" }],
+        "Premium global fruit, local produce, artisan bakery, and Fresh Commerce—beautifully curated in Kochi.",
+      images: [{ url: "/og-marketing.png", width: 1734, height: 907, alt: "Aeden Fresh — Fresh from the world. Fresh to your table." }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Aeden Fresh — Feel Good Food, Made Around You",
-      description: "Personalised bowls, honest nutrition, and flexible fresh deliveries in Kochi.",
-      images: ["/og.png"],
+      title: "Aeden Fresh — Fresh From the World. Fresh to Your Table.",
+      description: "Premium fresh grocery and flexible Fresh Commerce in Kochi.",
+      images: ["/og-marketing.png"],
     },
   };
 }

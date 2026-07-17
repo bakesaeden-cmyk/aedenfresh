@@ -7,7 +7,7 @@ import { CalendarClock, Home, Package, Salad, ShoppingBasket } from "lucide-reac
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
-  { href: "/", label: "Home", icon: Home, exact: true },
+  { href: "/shop", label: "Home", icon: Home, exact: true },
   { href: "/build", label: "Build", icon: Salad, exact: false },
   { href: "/baskets", label: "Browse", icon: ShoppingBasket, exact: false },
   { href: "/account/subscriptions", label: "Subscriptions", icon: CalendarClock, exact: false },

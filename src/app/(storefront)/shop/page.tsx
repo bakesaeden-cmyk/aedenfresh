@@ -22,6 +22,12 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { formatINR } from "@/lib/utils";
 
+export const metadata = {
+  title: "Fresh Commerce",
+  description:
+    "Build personalised bowls, shop the chef's menu, and schedule fresh deliveries from Aeden Fresh.",
+};
+
 interface Basket {
   id: string;
   name: string;

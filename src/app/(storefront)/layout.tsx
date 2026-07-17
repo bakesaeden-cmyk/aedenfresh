@@ -12,7 +12,6 @@ import {
 
 import { CartIndicator } from "@/components/cart/cart-indicator";
 import { DeliveryLocation } from "@/components/storefront/delivery-location";
-import { LogoSplash } from "@/components/storefront/logo-splash";
 import { MobileNav } from "@/components/storefront/mobile-nav";
 import { WhatsAppLauncher } from "@/components/storefront/whatsapp-launcher";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,7 @@ async function Header() {
       </div>
       <header className="border-border/70 bg-background/88 sticky top-0 z-50 border-b backdrop-blur-2xl">
         <div className="section-container flex h-[74px] items-center justify-between gap-4">
-          <Link href="/" className="flex items-center" aria-label="Aeden Fresh home">
+          <Link href="/shop" className="flex items-center" aria-label="Aeden Fresh commerce home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo-dark-crop.png"
@@ -56,7 +55,7 @@ async function Header() {
             >
               Subscriptions
             </Link>
-            <Link href="/#how-it-works" className="hover:text-accent transition-colors">
+            <Link href="/shop#how-it-works" className="hover:text-accent transition-colors">
               How it Works
             </Link>
           </nav>
@@ -155,7 +154,6 @@ function Footer() {
 export default function StorefrontLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <LogoSplash />
       <Header />
       <main className="flex-1 pb-16 md:pb-0">{children}</main>
       <Footer />

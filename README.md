@@ -1,9 +1,9 @@
-# Aeden Fresh — Digital Fresh-Commerce Platform
+# Aeden Fresh — Marketing & Digital Fresh-Commerce Platform
 
-The operating system for Aeden Fresh's fresh-food commerce: build-your-own
-salads and baskets, recurring subscriptions, multi-store PIN-code routing, and
-full WhatsApp commerce — per the build spec (self-build version of the
-WeCypher proposal).
+The complete digital home for Aeden Fresh: a premium grocery marketing site at
+`/`, plus Fresh Commerce at `/shop` with build-your-own salads and baskets,
+recurring subscriptions, multi-store PIN-code routing, and full WhatsApp
+commerce.
 
 **Stack:** Next.js 16 (App Router) · Supabase (Postgres + Auth + RLS) ·
 Razorpay · n8n · WhatsApp Cloud API · Tailwind v4.
@@ -27,7 +27,8 @@ Razorpay · n8n · WhatsApp Cloud API · Tailwind v4.
 
 ## Structure
 
-- `src/app/(storefront)/` — customer-facing routes: home, `/build` (M2),
+- `src/app/(marketing)/` — brand and store marketing homepage at `/`
+- `src/app/(storefront)/` — Fresh Commerce routes: `/shop`, `/build` (M2),
   `/baskets` (M2), `/login` (phone OTP), `/account`
 - `src/app/(admin)/admin/` — role-gated admin (RLS + proxy + layout check)
 - `src/app/api/` — commerce API routes (grow per milestone, spec §6)
