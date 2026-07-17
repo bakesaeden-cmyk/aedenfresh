@@ -1,0 +1,104 @@
+{
+  "name": "Aeden Fresh — Daily Subscription Renewal (6 AM IST)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 6 * * *" }] }
+      },
+      "id": "renew-cron",
+      "name": "Daily 6 AM Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-800, 0],
+      "notes": "Set n8n instance timezone to Asia/Kolkata (Render env GENERIC_TIMEZONE=Asia/Kolkata) so this fires 6 AM IST."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id, customer_id, saved_combo_id, store_id, address_id, delivery_slot_id from subscriptions where status = 'active' and next_delivery_date = current_date and (paused_until is null or paused_until < current_date);",
+        "options": {}
+      },
+      "id": "renew-due",
+      "name": "Find Due Subscriptions",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-560, 0],
+      "alwaysOutputData": true,
+      "notes": "TODO: attach Supabase Postgres credentials."
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "renew-loop",
+      "name": "One Sub At A Time",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [-320, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.PLATFORM_URL }}/api/subscriptions/renew",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "x-n8n-secret", "value": "={{ $env.N8N_API_SECRET }}" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ subscription_id: $json.id, scheduled_date: new Date().toISOString().slice(0,10) }) }}",
+        "options": { "response": { "response": { "neverError": true } } }
+      },
+      "id": "renew-call",
+      "name": "Renew via Platform API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-80, 0],
+      "notes": "IDEMPOTENT (spec §7): platform enforces unique(subscription_id, scheduled_date). HTTP 409 = order already created by a previous run → treat as success. neverError:true so 4xx/5xx flow to the If node instead of failing the run. The endpoint (M4) creates the order, charges Razorpay, advances next_delivery_date on success, and triggers failed-payment recovery on failure."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true },
+          "conditions": [
+            { "leftValue": "={{ [200, 201, 409].includes($json.statusCode ?? 200) }}", "rightValue": "true", "operator": { "type": "boolean", "operation": "true" } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "renew-ok",
+      "name": "Success or Already Done?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [160, 0]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "insert into notifications_log (customer_id, channel, type, status) values ($1, 'whatsapp', 'renewal_failed_alert', 'queued');",
+        "options": { "queryReplacement": "={{ [$('One Sub At A Time').item.json.customer_id] }}" }
+      },
+      "id": "renew-flag",
+      "name": "Flag For Manual Follow-up",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [400, 120],
+      "notes": "Renewal API call itself errored (network/5xx, not a payment failure — those are handled inside the endpoint). Log for ops review."
+    }
+  ],
+  "connections": {
+    "Daily 6 AM Cron": { "main": [[{ "node": "Find Due Subscriptions", "type": "main", "index": 0 }]] },
+    "Find Due Subscriptions": { "main": [[{ "node": "One Sub At A Time", "type": "main", "index": 0 }]] },
+    "One Sub At A Time": { "main": [[], [{ "node": "Renew via Platform API", "type": "main", "index": 0 }]] },
+    "Renew via Platform API": { "main": [[{ "node": "Success or Already Done?", "type": "main", "index": 0 }]] },
+    "Success or Already Done?": {
+      "main": [
+        [{ "node": "One Sub At A Time", "type": "main", "index": 0 }],
+        [{ "node": "Flag For Manual Follow-up", "type": "main", "index": 0 }]
+      ]
+    },
+    "Flag For Manual Follow-up": { "main": [[{ "node": "One Sub At A Time", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

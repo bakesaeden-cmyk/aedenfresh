@@ -1,0 +1,203 @@
+{
+  "name": "Aeden Fresh — Automation Engine (§5.8)",
+  "nodes": [
+    {
+      "parameters": { "rule": { "interval": [{ "field": "cronExpression", "expression": "30 6 * * *" }] } },
+      "id": "auto-morning-cron",
+      "name": "Morning 6:30 Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-800, -300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select o.id, o.order_number, cp.phone, ds.start_time, ds.end_time from orders o join customer_profiles cp on cp.id = o.customer_id left join delivery_slots ds on ds.id = o.delivery_slot_id where o.status = 'confirmed' and o.scheduled_date = current_date;",
+        "options": {}
+      },
+      "id": "auto-morning-orders",
+      "name": "Today's Confirmed Orders",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-560, -300],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $json.phone, type: 'text', text: { body: `Good morning! 🌅 Your Aeden Fresh order ${$json.order_number} is being prepared and will arrive between ${$json.start_time} and ${$json.end_time}.` } }) }}",
+        "options": {}
+      },
+      "id": "auto-morning-send",
+      "name": "Send Morning Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-320, -300],
+      "notes": "Follow with notifications_log insert (type='delivery_update')."
+    },
+
+    {
+      "parameters": { "rule": { "interval": [{ "field": "cronExpression", "expression": "0 */2 * * *" }] } },
+      "id": "auto-cart-cron",
+      "name": "Every 2h Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-800, -100]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select phone, customer_id from ( select ws.phone, ws.customer_id, ws.last_message_at as activity_at from whatsapp_sessions ws where ws.state in ('cart','customising') union all select cp.phone, ae.customer_id, max(ae.created_at) as activity_at from analytics_events ae join customer_profiles cp on cp.id = ae.customer_id where ae.event_name = 'cart_activity' and not exists ( select 1 from analytics_events op where op.customer_id = ae.customer_id and op.event_name = 'order_placed' and op.created_at > ae.created_at ) group by cp.phone, ae.customer_id ) candidates where activity_at < now() - interval '2 hours' and activity_at > now() - interval '48 hours' and customer_id is not null and not exists ( select 1 from notifications_log nl where nl.customer_id = candidates.customer_id and nl.type = 'abandoned_cart' and nl.sent_at > now() - interval '24 hours' );",
+        "options": {}
+      },
+      "id": "auto-cart-find",
+      "name": "Find Abandoned Sessions",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-560, -100],
+      "alwaysOutputData": true,
+      "notes": "Dedup built into the query: max one abandoned-cart nudge per customer per 24h."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $json.phone, type: 'text', text: { body: 'Your salad is still waiting to be finished 🥗 — reply MENU to pick up where you left off.' } }) }}",
+        "options": {}
+      },
+      "id": "auto-cart-send",
+      "name": "Send Cart Nudge",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-320, -100],
+      "notes": "Follow with notifications_log insert (type='abandoned_cart', status='sent')."
+    },
+
+    {
+      "parameters": { "httpMethod": "POST", "path": "aeden-payment-failed", "options": {} },
+      "id": "auto-payfail-hook",
+      "name": "Payment Failed Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-800, 100],
+      "notes": "Called by the platform's Razorpay webhook handler (M3) on payment.failed. Body: { order_id, customer_id, phone, retry_link, attempt }."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $json.body.phone, type: 'text', text: { body: `Your payment didn't go through 😔 — tap to retry: ${$json.body.retry_link}` } }) }}",
+        "options": {}
+      },
+      "id": "auto-payfail-send",
+      "name": "Send Retry Link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-560, 100]
+    },
+    {
+      "parameters": { "amount": 8, "unit": "hours" },
+      "id": "auto-payfail-wait",
+      "name": "Wait 8h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-320, 100],
+      "notes": "3 attempts over 24h: send → wait 8h → check payment status via platform API → if still unpaid and attempt < 3, resend; else flag order for manual follow-up (notifications_log type='failed_payment', status='failed')."
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.PLATFORM_URL }}/api/orders/{{ $json.body.order_id }}/track",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "x-n8n-secret", "value": "={{ $env.N8N_API_SECRET }}" }] },
+        "options": { "response": { "response": { "neverError": true } } }
+      },
+      "id": "auto-payfail-check",
+      "name": "Check Order Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-80, 100],
+      "notes": "x-n8n-secret required — /api/orders/:id/track is session-or-secret gated."
+    },
+
+    {
+      "parameters": { "rule": { "interval": [{ "field": "cronExpression", "expression": "0 10 * * *" }] } },
+      "id": "auto-reorder-cron",
+      "name": "Daily 10 AM Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-800, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "with gaps as (select sc.id, sc.name, sc.customer_id, cp.phone, sc.last_ordered_at, greatest(coalesce(extract(epoch from (now() - sc.last_ordered_at)) / 86400 / nullif(sc.order_count, 0), 7), 3) as avg_gap_days from saved_combos sc join customer_profiles cp on cp.id = sc.customer_id where sc.order_count >= 2 and cp.whatsapp_opted_in) select * from gaps where last_ordered_at < now() - (avg_gap_days || ' days')::interval and not exists (select 1 from notifications_log nl where nl.customer_id = gaps.customer_id and nl.type = 'reorder_prompt' and nl.sent_at > now() - interval '7 days');",
+        "options": {}
+      },
+      "id": "auto-reorder-find",
+      "name": "Find Reorder Candidates",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-560, 300],
+      "alwaysOutputData": true,
+      "notes": "avg reorder gap ≈ days since first order / order_count, floor 3 days. Max one prompt per customer per week."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $json.phone, type: 'interactive', interactive: { type: 'button', body: { text: `Time for your usual ${$json.name}? 🥗` }, action: { buttons: [ { type: 'reply', reply: { id: 'reorder_yes_' + $json.id, title: 'Order it! 🛒' } }, { type: 'reply', reply: { id: 'reorder_no', title: 'Not today' } } ] } } }) }}",
+        "options": {}
+      },
+      "id": "auto-reorder-send",
+      "name": "Send Reorder Prompt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-320, 300]
+    },
+
+    {
+      "parameters": { "rule": { "interval": [{ "field": "cronExpression", "expression": "0 9 * * *" }] } },
+      "id": "auto-campaign-cron",
+      "name": "Daily 9 AM Campaign Check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-800, 500],
+      "notes": "Birthday/festival campaigns: date-matched. Festival dates maintained in a Code node (Onam, Vishu, Christmas, Diwali…); birthdays need a dob column (future schema addition) or a campaign list. Sends approved WhatsApp TEMPLATE messages (marketing category) with an offer code — template must be pre-approved in Meta Business Manager."
+    },
+    {
+      "parameters": {
+        "jsCode": "const today = new Date().toISOString().slice(5, 10); // MM-DD\nconst FESTIVALS = { '01-14': { name: 'Pongal', code: 'PONGAL15' }, '04-14': { name: 'Vishu', code: 'VISHU20' }, '08-26': { name: 'Onam', code: 'ONAM25' }, '12-25': { name: 'Christmas', code: 'XMAS20' } };\nconst hit = FESTIVALS[today];\nreturn hit ? [{ json: { festival: hit.name, offer_code: hit.code } }] : [];"
+      },
+      "id": "auto-campaign-match",
+      "name": "Festival Date Match",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-560, 500],
+      "notes": "Empty output = no campaign today, chain stops. On match: query opted-in customers → send template broadcast in batches (Meta rate limits) → log notifications_log type='birthday'/'festival'."
+    }
+  ],
+  "connections": {
+    "Morning 6:30 Cron": { "main": [[{ "node": "Today's Confirmed Orders", "type": "main", "index": 0 }]] },
+    "Today's Confirmed Orders": { "main": [[{ "node": "Send Morning Notification", "type": "main", "index": 0 }]] },
+    "Every 2h Cron": { "main": [[{ "node": "Find Abandoned Sessions", "type": "main", "index": 0 }]] },
+    "Find Abandoned Sessions": { "main": [[{ "node": "Send Cart Nudge", "type": "main", "index": 0 }]] },
+    "Payment Failed Webhook": { "main": [[{ "node": "Send Retry Link", "type": "main", "index": 0 }]] },
+    "Send Retry Link": { "main": [[{ "node": "Wait 8h", "type": "main", "index": 0 }]] },
+    "Wait 8h": { "main": [[{ "node": "Check Order Status", "type": "main", "index": 0 }]] },
+    "Daily 10 AM Cron": { "main": [[{ "node": "Find Reorder Candidates", "type": "main", "index": 0 }]] },
+    "Find Reorder Candidates": { "main": [[{ "node": "Send Reorder Prompt", "type": "main", "index": 0 }]] },
+    "Daily 9 AM Campaign Check": { "main": [[{ "node": "Festival Date Match", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

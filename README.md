@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aeden Fresh — Digital Fresh-Commerce Platform
 
-## Getting Started
+The operating system for Aeden Fresh's fresh-food commerce: build-your-own
+salads and baskets, recurring subscriptions, multi-store PIN-code routing, and
+full WhatsApp commerce — per the build spec (self-build version of the
+WeCypher proposal).
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router) · Supabase (Postgres + Auth + RLS) ·
+Razorpay · n8n · WhatsApp Cloud API · Tailwind v4.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Supabase project**
+   - Create a project at [supabase.com](https://supabase.com).
+   - Run the migrations in order in the SQL Editor (or `supabase db push`):
+     - `supabase/migrations/0001_schema.sql`
+     - `supabase/migrations/0002_rls.sql`
+   - Enable **Phone Auth**: Dashboard → Authentication → Providers → Phone
+     (Twilio/MessageBird/Vonage — Twilio Verify is the usual choice for India).
+2. **Environment**
+   - `cp .env.example .env.local` and fill the Supabase URL + keys.
+3. **Run**
+   ```bash
+   npm install
+   npm run dev   # http://localhost:3000
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app/(storefront)/` — customer-facing routes: home, `/build` (M2),
+  `/baskets` (M2), `/login` (phone OTP), `/account`
+- `src/app/(admin)/admin/` — role-gated admin (RLS + proxy + layout check)
+- `src/app/api/` — commerce API routes (grow per milestone, spec §6)
+- `src/lib/supabase/` — browser / server / service-role clients
+- `src/proxy.ts` — session refresh + route protection (Next 16 proxy)
+- `supabase/migrations/` — schema (§4) and RLS policies
 
-## Learn More
+## Auth model
 
-To learn more about Next.js, take a look at the following resources:
+- Customers: **phone OTP** (matches their WhatsApp identity; a
+  `customer_profiles` row is auto-created by DB trigger on signup).
+- Admins: a row in `admin_users` (role: `super_admin` / `store_manager` /
+  `ops` / `support`). Seed your first super admin after signing in once:
+  ```sql
+  insert into admin_users (id, role)
+  values ('<auth.users.id>', 'super_admin');
+  ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Milestones — all complete ✅
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+M0 foundations → M1 catalogue & stores → M2 builder → M3 checkout/Razorpay →
+M4 subscriptions → M5 WhatsApp → M6 automations → M7 analytics → M8 QA.
 
-## Deploy on Vercel
+## Docs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [docs/api-contract.md](docs/api-contract.md) — every endpoint's shapes & errors
+- [docs/deploy.md](docs/deploy.md) — Vercel + Supabase + Razorpay + Meta + n8n production setup
+- [docs/qa-checklist.md](docs/qa-checklist.md) — §7 NFR evidence + post-credential test plan
+- [docs/n8n-setup.md](docs/n8n-setup.md) — workflow import, credentials, gotchas
+- `n8n/` — importable workflows: WhatsApp state machine, daily renewals, automations

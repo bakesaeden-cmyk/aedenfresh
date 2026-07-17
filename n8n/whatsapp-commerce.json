@@ -1,0 +1,199 @@
+{
+  "name": "Aeden Fresh — WhatsApp Commerce (state machine)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "aeden-whatsapp",
+        "options": {}
+      },
+      "id": "wa-trigger",
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1200, 0],
+      "notes": "Meta Cloud API webhook. Configure the same URL + verify token in Meta App Dashboard → WhatsApp → Configuration. GET verification is handled by the platform endpoint /api/webhooks/whatsapp (M5) OR by a second webhook node with responseMode. TODO: attach credentials."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract phone + message from Meta Cloud API payload (one IIFE — Set-node fields can't reference earlier fields in the same Set)\nreturn items.map((item) => {\n  const entry = item.json.body?.entry?.[0] ?? item.json.entry?.[0];\n  const change = entry?.changes?.[0]?.value;\n  const msg = change?.messages?.[0];\n  const phone = msg?.from ?? null;\n  let text = null;\n  let replyId = null;\n  if (msg?.type === 'text') text = msg.text?.body ?? null;\n  if (msg?.type === 'interactive') {\n    const i = msg.interactive;\n    replyId = i?.list_reply?.id ?? i?.button_reply?.id ?? null;\n    text = i?.list_reply?.title ?? i?.button_reply?.title ?? null;\n  }\n  return { json: { phone, text, replyId, messageType: msg?.type ?? 'unknown', raw: msg ?? {} } };\n});"
+      },
+      "id": "wa-extract",
+      "name": "Extract Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-960, 0]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "insert into whatsapp_messages_log (phone, direction, message_type, content) values ($1, 'inbound', $2, $3::jsonb);",
+        "options": { "queryReplacement": "={{ [$json.phone, $json.messageType, JSON.stringify($json.raw)] }}" }
+      },
+      "id": "wa-log-in",
+      "name": "Log Inbound",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-720, -160],
+      "notes": "TODO: attach Supabase Postgres credentials (connection string from Supabase → Settings → Database)."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "insert into whatsapp_sessions (phone, state, context) values ($1, 'idle', '{}'::jsonb) on conflict (phone) do update set last_message_at = now() returning id, phone, state, context, customer_id;",
+        "options": { "queryReplacement": "={{ [$json.phone] }}" }
+      },
+      "id": "wa-session",
+      "name": "Get/Create Session",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-720, 0],
+      "alwaysOutputData": true,
+      "notes": "alwaysOutputData:true so the not-found branch is routable."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            { "conditions": { "options": { "caseSensitive": false }, "conditions": [{ "leftValue": "={{ $json.state }}", "rightValue": "idle", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "outputKey": "idle" },
+            { "conditions": { "options": { "caseSensitive": false }, "conditions": [{ "leftValue": "={{ $json.state }}", "rightValue": "browsing", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "outputKey": "browsing" },
+            { "conditions": { "options": { "caseSensitive": false }, "conditions": [{ "leftValue": "={{ $json.state }}", "rightValue": "customising", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "outputKey": "customising" },
+            { "conditions": { "options": { "caseSensitive": false }, "conditions": [{ "leftValue": "={{ $json.state }}", "rightValue": "cart", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "outputKey": "cart" },
+            { "conditions": { "options": { "caseSensitive": false }, "conditions": [{ "leftValue": "={{ $json.state }}", "rightValue": "awaiting_payment", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "outputKey": "awaiting_payment" }
+          ]
+        },
+        "options": { "fallbackOutput": "extra" }
+      },
+      "id": "wa-state-router",
+      "name": "State Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [-480, 0],
+      "notes": "Fallback output = unknown state → send main menu."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $('Extract Message').item.json.phone, type: 'interactive', interactive: { type: 'list', header: { type: 'text', text: 'Aeden Fresh 🥗' }, body: { text: 'Fresh, delivered daily. What would you like to do?' }, action: { button: 'Menu', sections: [{ title: 'Shop', rows: [ { id: 'menu_build', title: 'Build a Salad' }, { id: 'menu_baskets', title: 'Curated Baskets' }, { id: 'menu_subs', title: 'My Subscriptions' }, { id: 'menu_track', title: 'Track Order' } ] }] } } }) }}",
+        "options": {}
+      },
+      "id": "wa-send-menu",
+      "name": "Send Main Menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-200, -240],
+      "notes": "Header auth credential: Authorization: Bearer {{WHATSAPP_ACCESS_TOKEN}}. After sending, Update Session sets state='browsing'."
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.PLATFORM_URL }}/api/catalogue?store_id={{ $json.context.store_id }}",
+        "options": {}
+      },
+      "id": "wa-fetch-catalogue",
+      "name": "Fetch Catalogue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-200, -80],
+      "notes": "browsing + 'Build a Salad' → fetch categories, send bases list, set state='customising', context={step:'base',selections:{}}. Store resolution: if context.store_id missing, first ask for pincode then GET /api/stores/resolve."
+    },
+    {
+      "parameters": {
+        "jsCode": "// CUSTOMISING: append selection, advance step, prepare next list\nconst STEPS = ['base','protein','dressing','topping','addon','portion'];\nconst s = $input.first().json;\nconst ctx = s.context ?? { step: 'base', selections: {} };\nconst replyId = $('Extract Message').first().json.replyId;\nif (replyId) {\n  const step = ctx.step;\n  if (!ctx.selections[step]) ctx.selections[step] = [];\n  ctx.selections[step].push(replyId);\n}\nconst idx = STEPS.indexOf(ctx.step);\nconst nextStep = idx < STEPS.length - 1 ? STEPS[idx + 1] : 'summary';\nctx.step = nextStep;\nreturn [{ json: { context: ctx, nextStep, phone: s.phone } }];"
+      },
+      "id": "wa-advance-step",
+      "name": "Advance Builder Step",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-200, 80],
+      "notes": "On nextStep='summary': compute price/nutrition totals from catalogue, send summary + [Subscribe | Order Once | Edit] buttons, set state='cart'. Multi-select categories (topping/addon) also offer a 'Done ✓' row to advance early."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.PLATFORM_URL }}/api/cart/checkout",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "x-n8n-secret", "value": "={{ $env.N8N_API_SECRET }}" }] },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: 'whatsapp', phone: $json.phone, option_ids: Object.values($json.context.selections).flat(), address_id: $json.context.address_id, delivery_slot_id: $json.context.slot_id, store_id: $json.context.store_id }) }}",
+        "options": {}
+      },
+      "id": "wa-checkout",
+      "name": "Create Order (Checkout API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-200, 240],
+      "notes": "CART state: after address (saved list or shared location → resolve store) + slot chosen. Response contains razorpay payment link → send to customer, set state='awaiting_payment'. M3 endpoint."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "update whatsapp_sessions set state = $2, context = $3::jsonb, last_message_at = now() where phone = $1;",
+        "options": { "queryReplacement": "={{ [$json.phone, $json.nextState, JSON.stringify($json.context ?? {})] }}" }
+      },
+      "id": "wa-update-session",
+      "name": "Update Session",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [200, 0],
+      "notes": "Every branch ends here: persist new state + context, then Log Outbound."
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "insert into whatsapp_messages_log (phone, direction, message_type, content) values ($1, 'outbound', $2, $3::jsonb);",
+        "options": { "queryReplacement": "={{ [$json.phone, 'interactive', JSON.stringify($json.sent ?? {})] }}" }
+      },
+      "id": "wa-log-out",
+      "name": "Log Outbound",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', to: $('Extract Message').item.json.phone, type: 'text', text: { body: \"Sorry, I didn't get that 🙈 — here's the menu again.\" } }) }}",
+        "options": {}
+      },
+      "id": "wa-fallback",
+      "name": "Fallback Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-200, 400],
+      "notes": "Unrecognised input → apology + re-send main menu (connect to Send Main Menu)."
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": { "main": [[{ "node": "Extract Message", "type": "main", "index": 0 }]] },
+    "Extract Message": { "main": [[{ "node": "Log Inbound", "type": "main", "index": 0 }, { "node": "Get/Create Session", "type": "main", "index": 0 }]] },
+    "Get/Create Session": { "main": [[{ "node": "State Router", "type": "main", "index": 0 }]] },
+    "State Router": {
+      "main": [
+        [{ "node": "Send Main Menu", "type": "main", "index": 0 }],
+        [{ "node": "Fetch Catalogue", "type": "main", "index": 0 }],
+        [{ "node": "Advance Builder Step", "type": "main", "index": 0 }],
+        [{ "node": "Create Order (Checkout API)", "type": "main", "index": 0 }],
+        [{ "node": "Fallback Reply", "type": "main", "index": 0 }],
+        [{ "node": "Fallback Reply", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Main Menu": { "main": [[{ "node": "Update Session", "type": "main", "index": 0 }]] },
+    "Fetch Catalogue": { "main": [[{ "node": "Update Session", "type": "main", "index": 0 }]] },
+    "Advance Builder Step": { "main": [[{ "node": "Update Session", "type": "main", "index": 0 }]] },
+    "Create Order (Checkout API)": { "main": [[{ "node": "Update Session", "type": "main", "index": 0 }]] },
+    "Fallback Reply": { "main": [[{ "node": "Send Main Menu", "type": "main", "index": 0 }]] },
+    "Update Session": { "main": [[{ "node": "Log Outbound", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
