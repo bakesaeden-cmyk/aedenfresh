@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   markOrderPaid,
   markOrderPaymentFailed,
-  notifyOrderConfirmed,
+  notifyPaidOrder,
   notifyPaymentFailed,
   notifyPaymentFailedDirect,
 } from "@/lib/orders";
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
         rawPayload: event,
       });
       // Instant WhatsApp confirmation + ETA (§5.7) — once, not on re-delivery
-      if (result.ok && !result.already && result.orderId) {
-        await notifyOrderConfirmed(result.orderId);
+      if (result.ok && result.orderId) {
+        await notifyPaidOrder(result.orderId);
       }
       break;
     }
@@ -92,11 +92,12 @@ export async function POST(request: NextRequest) {
       // handled for completeness; markOrderPaid is idempotent.
       const link = event.payload?.payment_link?.entity;
       if (link?.notes?.order_id && payment?.id) {
-        await markOrderPaid({
+        const result = await markOrderPaid({
           orderId: link.notes.order_id,
           razorpayPaymentId: payment.id,
           rawPayload: event,
         });
+        if (result.ok && result.orderId) await notifyPaidOrder(result.orderId);
       }
       break;
     }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-import { markOrderPaid } from "@/lib/orders";
+import { markOrderPaid, notifyPaidOrder } from "@/lib/orders";
 import { verifyCheckoutSignature } from "@/lib/razorpay";
 import { createClient } from "@/lib/supabase/server";
 
@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
   if (!result.ok) {
     return NextResponse.json({ error: "payment_not_found" }, { status: 404 });
   }
+  if (result.orderId) await notifyPaidOrder(result.orderId);
 
   return NextResponse.json({ ok: true, order_id: result.orderId });
 }

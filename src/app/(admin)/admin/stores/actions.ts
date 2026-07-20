@@ -24,6 +24,8 @@ export async function createStore(form: FormData) {
     latitude: num(form, "latitude"),
     longitude: num(form, "longitude"),
     phone: str(form, "phone") || null,
+    whatsapp_phone: str(form, "whatsapp_phone").replace(/\D/g, "") || null,
+    erp_store_code: str(form, "erp_store_code") || null,
     is_active: form.get("is_active") === "on",
   });
   if (error) redirect(`/admin/stores?error=${encodeURIComponent(error.message)}`);
@@ -42,6 +44,8 @@ export async function updateStore(form: FormData) {
       latitude: num(form, "latitude"),
       longitude: num(form, "longitude"),
       phone: str(form, "phone") || null,
+      whatsapp_phone: str(form, "whatsapp_phone").replace(/\D/g, "") || null,
+      erp_store_code: str(form, "erp_store_code") || null,
       is_active: form.get("is_active") === "on",
     })
     .eq("id", id);

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Clock,
   Loader2,
+  LocateFixed,
   MapPin,
   Minus,
   Plus,
@@ -41,6 +42,8 @@ interface Address {
   label: string | null;
   address_line: string;
   pincode: string;
+  latitude: number | null;
+  longitude: number | null;
   is_default: boolean;
 }
 interface Slot {
@@ -65,8 +68,9 @@ export function CartClient() {
   const [addressId, setAddressId] = useState("");
   const [slotId, setSlotId] = useState("");
   const [coupon, setCoupon] = useState("");
-  const [newAddress, setNewAddress] = useState({ label: "Home", address_line: "", pincode: "" });
+  const [newAddress, setNewAddress] = useState({ label: "Home", address_line: "", pincode: "", latitude: null as number | null, longitude: null as number | null });
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -111,13 +115,35 @@ export function CartClient() {
       }
       const { data: addr } = await supabase
         .from("customer_addresses")
-        .select("id, label, address_line, pincode, is_default")
+        .select("id, label, address_line, pincode, latitude, longitude, is_default")
         .order("is_default", { ascending: false });
       setAddresses((addr ?? []) as Address[]);
       const def = (addr ?? []).find((a) => a.is_default) ?? (addr ?? [])[0];
       if (def) setAddressId(def.id);
     })();
   }, []);
+
+  // The delivery address is authoritative. Re-route to the closest store
+  // whenever it changes so the summary, slots and final checkout agree.
+  useEffect(() => {
+    const address = addresses.find((item) => item.id === addressId);
+    if (!address) return;
+    const params = new URLSearchParams({ pincode: address.pincode });
+    if (address.latitude != null && address.longitude != null) {
+      params.set("lat", String(address.latitude));
+      params.set("lng", String(address.longitude));
+    }
+    void fetch(`/api/stores/resolve?${params}`)
+      .then(async (response) => {
+        if (!response.ok) return;
+        const data = (await response.json()) as { store: StoredStore; delivery_fee: number };
+        const nextStore = { ...data.store, delivery_fee: data.delivery_fee };
+        setStore(nextStore);
+        localStorage.setItem("af_store", JSON.stringify(nextStore));
+        window.dispatchEvent(new Event("af-store-changed"));
+      })
+      .catch(() => undefined);
+  }, [addressId, addresses]);
 
   useEffect(() => {
     if (!store?.id) return;
@@ -158,9 +184,11 @@ export function CartClient() {
         label: newAddress.label || null,
         address_line: newAddress.address_line,
         pincode: newAddress.pincode,
+        latitude: newAddress.latitude,
+        longitude: newAddress.longitude,
         is_default: addresses.length === 0,
       })
-      .select("id, label, address_line, pincode, is_default")
+      .select("id, label, address_line, pincode, latitude, longitude, is_default")
       .single();
     if (insErr || !data) {
       setError("Couldn't save the address — please try again.");
@@ -171,12 +199,31 @@ export function CartClient() {
     setShowAddressForm(false);
   }
 
-  async function checkout() {
-    setError(null);
-    if (!store) {
-      setError("Pick a delivery area first — build a salad to set your store.");
+  function useCurrentLocation() {
+    if (!navigator.geolocation) {
+      setError("Location access isn’t available in this browser.");
       return;
     }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setNewAddress((current) => ({
+          ...current,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }));
+        setLocating(false);
+      },
+      () => {
+        setError("We couldn’t access your location. Pincode routing will still work.");
+        setLocating(false);
+      },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 },
+    );
+  }
+
+  async function checkout() {
+    setError(null);
     if (!addressId) {
       setError("Choose or add a delivery address.");
       return;
@@ -188,7 +235,7 @@ export function CartClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           channel: "web",
-          store_id: store.id,
+          store_id: store?.id,
           address_id: addressId,
           delivery_slot_id: slotId || undefined,
           coupon_code: coupon.trim() || undefined,
@@ -196,6 +243,7 @@ export function CartClient() {
             option_ids: i.option_ids,
             curated_basket_id: i.curated_basket_id,
             saved_combo_id: i.saved_combo_id,
+            retail_product_id: i.retail_product_id,
             quantity: i.quantity,
           })),
         }),
@@ -247,7 +295,7 @@ export function CartClient() {
               router.push(`/orders/${data.order!.id}`);
             },
             modal: { ondismiss: () => router.push(`/orders/${data.order!.id}`) },
-            theme: { color: "#74A53D" },
+            theme: { color: "#83B13E" },
           });
           rzp.open();
           return;
@@ -269,14 +317,17 @@ export function CartClient() {
         <p className="eyebrow">Your fresh order</p>
         <h1 className="text-5xl">Your cart is ready for an idea.</h1>
         <p className="text-sm text-muted-foreground">
-          Build a bowl or grab a curated basket to get started.
+          Build a bowl, grab a chef-made favourite, or shop the fresh shelves.
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           <Button asChild>
             <Link href="/build">Build a Bowl</Link>
           </Button>
           <Button asChild variant="outline">
             <Link href="/baskets">Chef’s Menu</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/groceries">Fresh Groceries</Link>
           </Button>
         </div>
       </div>
@@ -300,12 +351,22 @@ export function CartClient() {
         {items.map((item) => (
           <Card key={item.key} className="rounded-2xl">
             <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <div className="min-w-0">
-                <p className="truncate font-medium">{item.label}</p>
-                <p className="text-xs text-muted-foreground">
-                  {item.portion_size && <>{item.portion_size} · </>}
-                  {formatINR(item.unit_price_estimate)} each
-                </p>
+              <div className="flex min-w-0 items-center gap-3">
+                {item.image_url && (
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-muted">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item.image_url} alt="" className="h-full w-full object-cover" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate font-medium">{item.label}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.unit_label && <>{item.unit_label} · </>}
+                    {item.portion_size && <>{item.portion_size} · </>}
+                    {formatINR(item.unit_price_estimate)} each
+                  </p>
+                  {item.kind === "grocery" && <p className="text-accent mt-1 text-[9px] font-bold tracking-[0.14em] uppercase">Fresh grocery</p>}
+                </div>
               </div>
               <div className="flex shrink-0 items-center justify-between gap-3 sm:justify-end">
                 <div className="flex items-center gap-1 rounded-full border px-1">
@@ -326,6 +387,7 @@ export function CartClient() {
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => updateQuantity(item.key, item.quantity + 1)}
+                    disabled={item.quantity >= 20}
                     aria-label="Increase quantity"
                   >
                     <Plus />
@@ -408,6 +470,15 @@ export function CartClient() {
                         setNewAddress({ ...newAddress, pincode: e.target.value.replace(/\D/g, "") })
                       }
                     />
+                    <button
+                      type="button"
+                      onClick={useCurrentLocation}
+                      disabled={locating}
+                      className="text-accent flex items-center gap-1.5 self-start text-xs font-semibold"
+                    >
+                      {locating ? <Loader2 size={13} className="animate-spin" /> : <LocateFixed size={13} />}
+                      {newAddress.latitude != null ? "Precise location added" : "Use current location for closest-store routing"}
+                    </button>
                     <Button type="submit" size="sm" variant="accent">
                       Save address
                     </Button>
@@ -500,7 +571,12 @@ function humanError(code?: string): string {
       return "Choose a valid delivery address.";
     case "option_inactive":
     case "unknown_option":
+    case "option_unavailable":
       return "An item in your cart is no longer available — please rebuild it.";
+    case "unknown_retail_product":
+      return "A grocery item is no longer in the catalogue.";
+    case "retail_out_of_stock":
+      return "A grocery item just sold out or changed stock. Refresh the shop and try again.";
     case "auth_required":
       return "Please sign in to checkout.";
     default:

@@ -10,23 +10,25 @@ import {
 } from "@/lib/razorpay";
 import { createServiceClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { resolveStoreForLocation } from "@/lib/store-routing";
 
 const itemSchema = z.object({
   option_ids: z.array(z.string().uuid()).min(1).max(30).optional(),
   curated_basket_id: z.string().uuid().optional(),
   saved_combo_id: z.string().uuid().optional(),
+  retail_product_id: z.string().uuid().optional(),
   quantity: z.number().int().min(1).max(20).default(1),
 });
 
 const checkoutSchema = z.object({
   channel: z.enum(["web", "whatsapp"]).default("web"),
   phone: z.string().optional(), // whatsapp channel identity
-  store_id: z.string().uuid(),
+  store_id: z.string().uuid().optional(),
   address_id: z.string().uuid(),
   delivery_slot_id: z.string().uuid().optional(),
   coupon_code: z.string().max(30).optional(),
   scheduled_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  items: z.array(itemSchema).min(1).max(10),
+  items: z.array(itemSchema).min(1).max(40),
 });
 
 /**
@@ -95,27 +97,40 @@ export async function POST(request: NextRequest) {
   // ── Address must belong to the customer; fee from coverage ──
   const { data: address } = await db
     .from("customer_addresses")
-    .select("id, customer_id, pincode")
+    .select("id, customer_id, pincode, latitude, longitude")
     .eq("id", input.address_id)
     .maybeSingle();
   if (!address || address.customer_id !== customerId) {
     return NextResponse.json({ error: "invalid_address" }, { status: 400 });
   }
 
-  const { data: coverage } = await db
-    .from("store_pincode_coverage")
-    .select("delivery_fee")
-    .eq("store_id", input.store_id)
-    .eq("pincode", address.pincode)
-    .eq("is_active", true)
-    .maybeSingle();
-  if (!coverage) {
+  const resolved = await resolveStoreForLocation(db, {
+    pincode: address.pincode,
+    latitude: address.latitude == null ? null : Number(address.latitude),
+    longitude: address.longitude == null ? null : Number(address.longitude),
+  });
+  if ("error" in resolved) {
     return NextResponse.json(
-      { error: "no_coverage", message: "This store does not deliver to that address" },
-      { status: 400 },
+      { error: resolved.error, message: "No Aeden store currently delivers to that address" },
+      { status: resolved.error === "no_coverage" ? 400 : 500 },
     );
   }
-  const deliveryFee = Number(coverage.delivery_fee);
+  const storeId = resolved.store.id;
+  const deliveryFee = resolved.delivery_fee;
+
+  // A slot selected for an earlier location must never leak into a newly
+  // routed store order.
+  let deliverySlotId: string | null = null;
+  if (input.delivery_slot_id) {
+    const { data: slot } = await db
+      .from("delivery_slots")
+      .select("id")
+      .eq("id", input.delivery_slot_id)
+      .eq("store_id", storeId)
+      .eq("is_active", true)
+      .maybeSingle();
+    deliverySlotId = slot?.id ?? null;
+  }
 
   // ── Price every line server-side ───────────────────────────
   let subtotal = 0;
@@ -123,6 +138,10 @@ export async function POST(request: NextRequest) {
     option_ids: string[] | null;
     curated_basket_id: string | null;
     saved_combo_id: string | null;
+    retail_product_id: string | null;
+    product_name_snapshot: string | null;
+    sku_snapshot: string | null;
+    unit_label_snapshot: string | null;
     quantity: number;
     unit_price: number;
     line_total: number;
@@ -130,10 +149,19 @@ export async function POST(request: NextRequest) {
 
   for (const item of input.items) {
     let unitPrice: number;
+    let retailSnapshot: { name: string; sku: string; unitLabel: string } | null = null;
     if (item.option_ids?.length) {
       const priced = await priceOptionBuild(db, item.option_ids);
       if ("error" in priced) {
         return NextResponse.json({ error: priced.error }, { status: 400 });
+      }
+      const { data: unavailable } = await db
+        .from("store_inventory")
+        .select("product_option_id, stock_qty, is_available")
+        .eq("store_id", storeId)
+        .in("product_option_id", item.option_ids);
+      if ((unavailable ?? []).some((row) => !row.is_available || (row.stock_qty != null && Number(row.stock_qty) <= 0))) {
+        return NextResponse.json({ error: "option_unavailable" }, { status: 409 });
       }
       unitPrice = priced.unitPrice;
     } else if (item.curated_basket_id) {
@@ -146,9 +174,34 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "unknown_basket" }, { status: 400 });
       }
       unitPrice = Number(basket.base_price);
+    } else if (item.retail_product_id) {
+      const [{ data: product }, { data: inventory }] = await Promise.all([
+        db
+          .from("retail_products")
+          .select("id, sku, name, unit_label, selling_price, is_active")
+          .eq("id", item.retail_product_id)
+          .maybeSingle(),
+        db
+          .from("retail_inventory")
+          .select("stock_qty, reserved_qty, selling_price, is_available")
+          .eq("store_id", storeId)
+          .eq("retail_product_id", item.retail_product_id)
+          .maybeSingle(),
+      ]);
+      const availableQuantity = inventory
+        ? Number(inventory.stock_qty) - Number(inventory.reserved_qty)
+        : 0;
+      if (!product?.is_active) {
+        return NextResponse.json({ error: "unknown_retail_product" }, { status: 400 });
+      }
+      if (!inventory?.is_available || availableQuantity < item.quantity) {
+        return NextResponse.json({ error: "retail_out_of_stock", product_id: item.retail_product_id }, { status: 409 });
+      }
+      unitPrice = Number(inventory.selling_price ?? product.selling_price);
+      retailSnapshot = { name: product.name, sku: product.sku, unitLabel: product.unit_label };
     } else {
       return NextResponse.json(
-        { error: "invalid_body", message: "item needs option_ids or curated_basket_id" },
+        { error: "invalid_body", message: "item needs option_ids, curated_basket_id or retail_product_id" },
         { status: 400 },
       );
     }
@@ -158,6 +211,10 @@ export async function POST(request: NextRequest) {
       option_ids: item.option_ids ?? null,
       curated_basket_id: item.curated_basket_id ?? null,
       saved_combo_id: item.saved_combo_id ?? null,
+      retail_product_id: item.retail_product_id ?? null,
+      product_name_snapshot: retailSnapshot?.name ?? null,
+      sku_snapshot: retailSnapshot?.sku ?? null,
+      unit_label_snapshot: retailSnapshot?.unitLabel ?? null,
       quantity: item.quantity,
       unit_price: unitPrice,
       line_total: lineTotal,
@@ -176,9 +233,9 @@ export async function POST(request: NextRequest) {
     .from("orders")
     .insert({
       customer_id: customerId,
-      store_id: input.store_id,
+      store_id: storeId,
       address_id: input.address_id,
-      delivery_slot_id: input.delivery_slot_id ?? null,
+      delivery_slot_id: deliverySlotId,
       order_type: "one_time",
       channel: input.channel,
       status: "pending_payment",
@@ -196,10 +253,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "order_create_failed" }, { status: 500 });
   }
 
+  const service = createServiceClient();
+  const retailQuantities = new Map<string, number>();
+  for (const item of pricedItems) {
+    if (item.retail_product_id) {
+      retailQuantities.set(
+        item.retail_product_id,
+        (retailQuantities.get(item.retail_product_id) ?? 0) + item.quantity,
+      );
+    }
+  }
+  if (retailQuantities.size) {
+    const { error: reservationError } = await service.rpc("reserve_retail_inventory", {
+      order_id_in: order.id,
+      store_id_in: storeId,
+      items_in: Array.from(retailQuantities, ([product_id, quantity]) => ({ product_id, quantity })),
+    });
+    if (reservationError) {
+      await service.from("orders").delete().eq("id", order.id);
+      return NextResponse.json({ error: "retail_out_of_stock" }, { status: 409 });
+    }
+  }
+
   const { error: itemsError } = await db
     .from("order_items")
     .insert(pricedItems.map((i) => ({ ...i, order_id: order.id })));
   if (itemsError) {
+    if (retailQuantities.size) {
+      await service.rpc("release_retail_inventory", { order_id_in: order.id });
+    }
+    await service.from("orders").delete().eq("id", order.id);
     return NextResponse.json({ error: "order_items_failed" }, { status: 500 });
   }
 
@@ -208,7 +291,7 @@ export async function POST(request: NextRequest) {
   await db.from("analytics_events").insert({
     customer_id: customerId,
     event_name: "order_placed",
-    properties: { order_id: order.id, channel: input.channel, total },
+    properties: { order_id: order.id, channel: input.channel, total, store_id: storeId, retail_items: retailQuantities.size },
   });
 
   // ── Razorpay ───────────────────────────────────────────────
@@ -223,7 +306,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const service = createServiceClient(); // payments table is service-role only
   try {
     if (input.channel === "whatsapp") {
       const link = await createPaymentLink({

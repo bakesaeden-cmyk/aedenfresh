@@ -28,7 +28,7 @@ async function Header() {
       <div className="bg-secondary text-secondary-foreground overflow-hidden py-2.5">
         <div className="section-container flex items-center justify-center gap-2 text-center text-[10px] font-bold tracking-[0.18em] uppercase">
           <Leaf size={11} className="text-primary shrink-0" />
-          <span>Made fresh in Kochi · Flexible subscriptions · Order on WhatsApp</span>
+          <span>Aeden Fresh Commerce · Made in Kochi · Flexible subscriptions · WhatsApp friendly</span>
         </div>
       </div>
       <header className="border-border/70 bg-background/88 sticky top-0 z-50 border-b backdrop-blur-2xl">
@@ -42,7 +42,10 @@ async function Header() {
             />
           </Link>
 
-          <nav className="text-foreground/68 hidden items-center gap-7 text-[12px] font-semibold 2xl:flex">
+          <nav className="text-foreground/68 hidden items-center gap-5 text-[11.5px] font-semibold xl:flex 2xl:gap-7">
+            <Link href="/groceries" className="hover:text-accent transition-colors">
+              Fresh Groceries
+            </Link>
             <Link href="/build" className="hover:text-accent transition-colors">
               Build a Bowl
             </Link>
@@ -58,13 +61,16 @@ async function Header() {
             <Link href="/shop#how-it-works" className="hover:text-accent transition-colors">
               How it Works
             </Link>
+            <Link href="/" className="hover:text-accent transition-colors">
+              Our Story
+            </Link>
           </nav>
 
           <div className="flex items-center gap-1.5">
             <DeliveryLocation />
             <Link
-              href="/baskets"
-              aria-label="Search the menu"
+              href="/groceries"
+              aria-label="Search fresh groceries"
               className="hover:bg-muted flex h-10 w-10 items-center justify-center rounded-full transition-colors"
             >
               <Search size={17} />
@@ -77,7 +83,7 @@ async function Header() {
               <User size={17} />
             </Link>
             <CartIndicator />
-            <Button asChild size="sm" className="glow-leaf ml-1 hidden xl:inline-flex">
+            <Button asChild size="sm" className="glow-leaf ml-1 hidden 2xl:inline-flex">
               <Link href="/build">
                 <Salad />
                 Build my bowl
@@ -125,9 +131,11 @@ function Footer() {
           <p className="text-primary text-[10px] font-bold tracking-[0.2em] uppercase">Explore</p>
           <div className="mt-5 flex flex-col gap-3 text-sm text-white/62">
             <Link href="/build" className="hover:text-white">Build a Bowl</Link>
+            <Link href="/groceries" className="hover:text-white">Fresh Groceries</Link>
             <Link href="/baskets" className="hover:text-white">Chef’s Menu</Link>
             <Link href="/account/subscriptions" className="hover:text-white">Subscriptions</Link>
             <Link href="/account" className="hover:text-white">My Account</Link>
+            <Link href="/" className="hover:text-white">Aeden Fresh Story</Link>
           </div>
         </div>
 
@@ -137,6 +145,7 @@ function Footer() {
             <span className="flex items-center gap-2"><Leaf size={14} /> Sourced fresh</span>
             <span className="flex items-center gap-2"><ShieldCheck size={14} /> Prepared with care</span>
             <span className="flex items-center gap-2"><Camera size={14} /> @aedenfresh</span>
+            <Link href="/stores" className="hover:text-white">Find a Store</Link>
           </div>
         </div>
       </div>

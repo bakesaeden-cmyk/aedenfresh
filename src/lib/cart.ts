@@ -8,9 +8,14 @@
 export interface CartItem {
   key: string; // client-side identity
   label: string;
+  kind?: "bowl" | "basket" | "grocery";
   option_ids?: string[];
   curated_basket_id?: string;
   saved_combo_id?: string;
+  retail_product_id?: string;
+  sku?: string;
+  unit_label?: string;
+  image_url?: string;
   portion_size?: string;
   unit_price_estimate: number;
   quantity: number;
@@ -34,6 +39,14 @@ function persist(items: CartItem[]) {
 
 export function addToCart(item: Omit<CartItem, "key">) {
   const items = getCart();
+  if (item.retail_product_id) {
+    const existing = items.find((entry) => entry.retail_product_id === item.retail_product_id);
+    if (existing) {
+      existing.quantity = Math.min(20, existing.quantity + item.quantity);
+      persist(items);
+      return;
+    }
+  }
   items.push({ ...item, key: crypto.randomUUID() });
   persist(items);
 }

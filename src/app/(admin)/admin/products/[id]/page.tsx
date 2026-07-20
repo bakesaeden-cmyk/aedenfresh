@@ -106,7 +106,7 @@ export default async function EditOptionPage({
                 name="is_active"
                 type="checkbox"
                 defaultChecked={option.is_active}
-                className="h-4 w-4 accent-[#5C8C2F]"
+                className="h-4 w-4 accent-[#237049]"
               />
               <Label htmlFor="is_active">Active (visible in builder)</Label>
             </div>

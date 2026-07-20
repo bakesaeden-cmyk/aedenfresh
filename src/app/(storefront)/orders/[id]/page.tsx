@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Check, Clock, FileText } from "lucide-react";
+import { Check, Clock, FileText, ShoppingBag } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,11 @@ export default async function OrderTrackingPage({
     .select("status, changed_at")
     .eq("order_id", id)
     .order("changed_at");
+
+  const { data: items } = await supabase
+    .from("order_items")
+    .select("id, quantity, unit_price, line_total, retail_product_id, product_name_snapshot, unit_label_snapshot, curated_basket_id")
+    .eq("order_id", id);
 
   const reached = new Map(
     (history ?? []).map((h) => [h.status as string, h.changed_at as string]),
@@ -138,6 +143,28 @@ export default async function OrderTrackingPage({
               })}
             </ol>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl"><ShoppingBag size={17} /> Items</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {(items ?? []).map((item) => (
+            <div key={item.id} className="flex items-start justify-between gap-4 border-b pb-3 last:border-0 last:pb-0">
+              <div>
+                <p className="text-sm font-medium">
+                  {item.product_name_snapshot || (item.curated_basket_id ? "Chef-built bowl" : "Custom Aeden bowl")}
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-xs">
+                  {item.quantity} × {formatINR(Number(item.unit_price))}
+                  {item.unit_label_snapshot ? ` · ${item.unit_label_snapshot}` : ""}
+                </p>
+              </div>
+              <p className="font-serif text-lg">{formatINR(Number(item.line_total))}</p>
+            </div>
+          ))}
         </CardContent>
       </Card>
 

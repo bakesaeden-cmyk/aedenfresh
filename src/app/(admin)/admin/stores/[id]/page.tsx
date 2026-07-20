@@ -25,7 +25,7 @@ export default async function EditStorePage({
 
   const { data: store } = await supabase
     .from("stores")
-    .select("id, name, address, pincode, latitude, longitude, phone, is_active")
+    .select("id, name, address, pincode, latitude, longitude, phone, whatsapp_phone, erp_store_code, is_active")
     .eq("id", id)
     .maybeSingle();
 
@@ -70,6 +70,14 @@ export default async function EditStorePage({
               <Label htmlFor="phone">Phone</Label>
               <Input id="phone" name="phone" defaultValue={store.phone ?? ""} />
             </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="whatsapp_phone">Store WhatsApp</Label>
+              <Input id="whatsapp_phone" name="whatsapp_phone" inputMode="tel" defaultValue={store.whatsapp_phone ?? ""} placeholder="919876543210" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="erp_store_code">ERP store code</Label>
+              <Input id="erp_store_code" name="erp_store_code" defaultValue={store.erp_store_code ?? ""} placeholder="KAD" />
+            </div>
             <div className="flex flex-col gap-1.5 sm:col-span-2">
               <Label htmlFor="address">Address</Label>
               <Input id="address" name="address" defaultValue={store.address} required />
@@ -94,7 +102,7 @@ export default async function EditStorePage({
                 name="is_active"
                 type="checkbox"
                 defaultChecked={store.is_active}
-                className="h-4 w-4 accent-[#5C8C2F]"
+                className="h-4 w-4 accent-[#237049]"
               />
               <Label htmlFor="is_active">Active</Label>
             </div>

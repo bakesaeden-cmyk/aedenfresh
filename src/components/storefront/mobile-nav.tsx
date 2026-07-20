@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarClock, Home, Package, Salad, ShoppingBasket } from "lucide-react";
+import { Home, Package, Salad, ShoppingBag, ShoppingBasket } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { href: "/shop", label: "Home", icon: Home, exact: true },
+  { href: "/groceries", label: "Groceries", icon: ShoppingBag, exact: false },
   { href: "/build", label: "Build", icon: Salad, exact: false },
   { href: "/baskets", label: "Browse", icon: ShoppingBasket, exact: false },
-  { href: "/account/subscriptions", label: "Subscriptions", icon: CalendarClock, exact: false },
   { href: "/account", label: "Orders", icon: Package, exact: true },
 ] as const;
 

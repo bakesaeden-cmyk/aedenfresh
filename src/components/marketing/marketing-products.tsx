@@ -5,7 +5,7 @@
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Search, ArrowRight, X } from "lucide-react";
+import { Search, ArrowRight, X, Leaf, Store } from "lucide-react";
 import { ALL_PRODUCTS, type ProductCategory } from "@/data/products";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
@@ -20,11 +20,11 @@ const stagger = {
   show: { transition: { staggerChildren: 0.07 } },
 };
 
-const CATEGORIES: { id: "all" | ProductCategory; label: string; emoji: string }[] = [
-  { id: "all",      label: "All Products",      emoji: "🛒" },
-  { id: "imported", label: "Imported Fruits",   emoji: "✈️" },
-  { id: "indian",   label: "Indian Varieties",  emoji: "🇮🇳" },
-  { id: "produce",  label: "Fresh Produce",     emoji: "🥦" },
+const CATEGORIES: { id: "all" | ProductCategory; label: string }[] = [
+  { id: "all",      label: "All Products" },
+  { id: "imported", label: "Imported Fruits" },
+  { id: "indian",   label: "Indian Varieties" },
+  { id: "produce",  label: "Fresh Produce" },
 ];
 
 const HERO_IMAGES: Record<"all" | ProductCategory, string> = {
@@ -62,24 +62,24 @@ export default function Products() {
   }, [query, category]);
 
   return (
-    <div className="w-full min-h-screen bg-[#FAF7F2] overflow-x-hidden">
+    <div className="w-full min-h-screen bg-[#F9F7F1] overflow-x-hidden">
 
       {/* ── NAVBAR ── */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-[#FAF7F2]/96 backdrop-blur-xl shadow-[0_1px_0_rgba(0,0,0,0.06)] py-3">
+      <nav className="fixed top-0 inset-x-0 z-50 bg-[#F9F7F1]/96 backdrop-blur-xl shadow-[0_1px_0_rgba(0,0,0,0.06)] py-3">
         <div className="section-container flex items-center justify-between">
           <Link href="/">
             <img src="/images/logo-dark.png" alt="Aeden Fresh" className="h-10 md:h-12 w-auto" />
           </Link>
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-[#1C2951]/60 hover:text-[#1C2951] text-[13px] font-medium transition-colors hidden md:block">
+          <div className="flex items-center gap-5">
+            <Link href="/" className="text-[#162D20]/60 hover:text-[#162D20] text-[13px] font-medium transition-colors hidden md:block">
               ← Back to Home
             </Link>
-            <Link href="/shop" className="text-[#1C2951]/60 hover:text-[#1C2951] text-[13px] font-medium transition-colors hidden md:block">
-              Shop Online
-            </Link>
-            <Link href="/stores"
-              className="bg-[#E8303A] hover:bg-[#cc2b34] text-white rounded-full px-6 h-10 text-[13px] font-semibold inline-flex items-center transition-colors duration-300 shadow-lg shadow-red-900/25">
+            <Link href="/stores" className="text-[#162D20]/60 hover:text-[#162D20] text-[13px] font-medium transition-colors hidden sm:block">
               Find a Store
+            </Link>
+            <Link href="/shop"
+              className="bg-[#83B13E] hover:bg-[#A1CF58] text-[#122119] rounded-full px-6 h-10 text-[13px] font-bold inline-flex items-center gap-2 transition-colors duration-300 shadow-lg shadow-green-950/25">
+              Shop Fresh <ArrowRight size={13} />
             </Link>
           </div>
         </div>
@@ -94,8 +94,8 @@ export default function Products() {
             <img src={HERO_IMAGES[category]} alt="" className="w-full h-full object-cover object-center" />
           </motion.div>
         </AnimatePresence>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050d1c]/90 via-[#0d1c3a]/70 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050d1c]/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2116]/90 via-[#183D29]/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B2116]/50 via-transparent to-transparent" />
 
         <div className="relative z-10 h-full flex flex-col justify-end pb-12 section-container">
           <nav className="flex items-center gap-2 mb-5 text-[11px] font-semibold tracking-[0.18em] uppercase text-white/40">
@@ -119,19 +119,20 @@ export default function Products() {
       </section>
 
       {/* ── FILTERS + SEARCH ── */}
-      <div className="bg-white border-b border-[#1C2951]/8 sticky top-[60px] z-40 shadow-sm">
+      <div className="bg-white border-b border-[#162D20]/8 sticky top-[60px] z-40 shadow-sm">
         <div className="section-container py-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
 
           {/* Category pills */}
           <div className="flex flex-wrap gap-2 flex-1">
             {CATEGORIES.map(cat => (
               <button key={cat.id} onClick={() => setCategory(cat.id)}
-                className={`flex items-center gap-1.5 px-4 h-9 rounded-full text-[12.5px] font-semibold transition-all duration-250 ${
+                aria-pressed={category === cat.id}
+                className={`flex items-center gap-2 px-4 h-9 rounded-full text-[12.5px] font-semibold transition-all duration-250 ${
                   category === cat.id
-                    ? "bg-[#1C2951] text-white shadow-md"
-                    : "bg-[#FAF7F2] text-[#1C2951]/60 border border-[#1C2951]/12 hover:bg-[#1C2951]/8 hover:text-[#1C2951]"
+                    ? "bg-[#162D20] text-white shadow-md"
+                    : "bg-[#F9F7F1] text-[#162D20]/60 border border-[#162D20]/12 hover:bg-[#162D20]/8 hover:text-[#162D20]"
                 }`}>
-                <span>{cat.emoji}</span>
+                <span className={`h-1.5 w-1.5 rounded-full ${category === cat.id ? "bg-[#83B13E]" : "bg-[#162D20]/25"}`} />
                 <span>{cat.label}</span>
               </button>
             ))}
@@ -139,17 +140,19 @@ export default function Products() {
 
           {/* Search */}
           <div className="relative w-full sm:w-64 flex-shrink-0">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1C2951]/35 pointer-events-none" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#162D20]/35 pointer-events-none" />
             <input
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
+              aria-label="Search Aeden Fresh products"
               placeholder="Search products…"
-              className="w-full h-9 pl-9 pr-8 rounded-full border border-[#1C2951]/14 bg-[#FAF7F2] text-[#1C2951] text-[13px] placeholder:text-[#1C2951]/35 focus:outline-none focus:border-[#1C2951]/30 focus:bg-white transition-all"
+              className="w-full h-9 pl-9 pr-8 rounded-full border border-[#162D20]/14 bg-[#F9F7F1] text-[#162D20] text-[13px] placeholder:text-[#162D20]/35 focus:outline-none focus:border-[#162D20]/30 focus:bg-white transition-all"
             />
             {query && (
               <button onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1C2951]/35 hover:text-[#1C2951] transition-colors">
+                aria-label="Clear product search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#162D20]/35 hover:text-[#162D20] transition-colors">
                 <X size={13} />
               </button>
             )}
@@ -160,10 +163,31 @@ export default function Products() {
       {/* ── PRODUCT GRID ── */}
       <section className="section-container py-16 lg:py-20">
 
+        <div className="relative mb-14 overflow-hidden rounded-[2rem] bg-[#162D20] px-6 py-8 text-white shadow-luxe md:px-10 md:py-10">
+          <div className="absolute -right-12 -top-20 h-64 w-64 rounded-full bg-[#83B13E]/18 blur-3xl" />
+          <div className="relative flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="mb-3 flex items-center gap-2 text-[10px] font-bold tracking-[0.22em] text-[#A6D55E] uppercase">
+                <Leaf size={13} /> Fresh, two ways
+              </p>
+              <h2 className="font-serif text-3xl leading-tight md:text-4xl">Take the best produce home, or let our kitchen make it for you.</h2>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-white/58">Our store range and Fresh Commerce kitchen share the same standard: considered sourcing, honest ingredients and freshness you can see.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/shop" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#83B13E] px-6 text-sm font-bold text-[#122119] transition-colors hover:bg-[#A1CF58]">
+                Explore Fresh Commerce <ArrowRight size={14} />
+              </Link>
+              <Link href="/stores" className="inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-white/8 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/14">
+                <Store size={14} /> Visit a store
+              </Link>
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between mb-10">
-          <p className="text-[#1C2951]/40 text-[13px] font-medium">
+          <p className="text-[#162D20]/40 text-[13px] font-medium">
             {filtered.length} {filtered.length === 1 ? "product" : "products"}
-            {query && <span className="text-[#1C2951]/60"> for "{query}"</span>}
+            {query && <span className="text-[#162D20]/60"> for "{query}"</span>}
           </p>
         </div>
 
@@ -172,11 +196,11 @@ export default function Products() {
             <motion.div key="empty"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="text-center py-24">
-              <p className="text-6xl mb-6">🔍</p>
-              <p className="text-[#1C2951] font-serif text-2xl mb-3">No products found</p>
-              <p className="text-[#1C2951]/45 font-light">Try a different search term or category.</p>
+              <span className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#162D20]/8 text-[#237049]"><Search size={22} /></span>
+              <p className="text-[#162D20] font-serif text-2xl mb-3">No products found</p>
+              <p className="text-[#162D20]/45 font-light">Try a different search term or category.</p>
               <button onClick={() => { setQuery(""); setCategory("all"); }}
-                className="mt-6 text-[#E8303A] text-sm font-semibold underline underline-offset-2">
+                className="mt-6 text-[#237049] text-sm font-semibold underline underline-offset-2">
                 Clear all filters
               </button>
             </motion.div>
@@ -187,14 +211,14 @@ export default function Products() {
               {filtered.map((product) => (
                 <motion.div key={product.slug} variants={fadeUp}>
                   <Link href={`/products/${product.slug}`} className="group block h-full">
-                    <div className="bg-white rounded-2xl overflow-hidden border border-[#1C2951]/8 hover:border-gold/40 shadow-luxe hover:shadow-luxe-lg lift transition-[border-color,box-shadow] duration-400 h-full flex flex-col">
+                    <div className="bg-white rounded-2xl overflow-hidden border border-[#162D20]/8 hover:border-gold/40 shadow-luxe hover:shadow-luxe-lg lift transition-[border-color,box-shadow] duration-400 h-full flex flex-col">
 
                       {/* Image */}
-                      <div className="aspect-[4/3] overflow-hidden bg-[#f0ece5] relative">
+                      <div className="aspect-[4/3] overflow-hidden bg-[#EEEBE2] relative">
                         <img src={product.img} alt={product.brand} loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                         <div className="absolute top-3 left-3">
-                          <span className="text-[9.5px] font-bold tracking-[0.18em] uppercase px-2.5 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-[#1C2951]/70 border border-[#1C2951]/10">
+                          <span className="text-[9.5px] font-bold tracking-[0.18em] uppercase px-2.5 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-[#162D20]/70 border border-[#162D20]/10">
                             {product.tag}
                           </span>
                         </div>
@@ -203,21 +227,21 @@ export default function Products() {
 
                       {/* Content */}
                       <div className="p-6 flex flex-col flex-1">
-                        <p className="text-[10.5px] font-semibold tracking-[0.18em] uppercase text-[#5C8C2F] mb-1">
+                        <p className="text-[10.5px] font-semibold tracking-[0.18em] uppercase text-[#237049] mb-1">
                           {product.variety}
                         </p>
-                        <h3 className="font-serif text-[1.3rem] text-[#1C2951] leading-tight mb-2 group-hover:text-[#E8303A] transition-colors duration-300">
+                        <h3 className="font-serif text-[1.3rem] text-[#162D20] leading-tight mb-2 group-hover:text-[#237049] transition-colors duration-300">
                           {product.brand}
                         </h3>
-                        <p className="text-[#1C2951]/50 text-[13px] font-light leading-relaxed line-clamp-2 flex-1 mb-4">
+                        <p className="text-[#162D20]/50 text-[13px] font-light leading-relaxed line-clamp-2 flex-1 mb-4">
                           {product.desc}
                         </p>
 
-                        <div className="h-px bg-[#1C2951]/8 mb-4" />
+                        <div className="h-px bg-[#162D20]/8 mb-4" />
 
                         <div className="flex items-center justify-between">
-                          <p className="text-[11px] text-[#1C2951]/38 font-medium tracking-wide">{product.origin}</p>
-                          <span className="flex items-center gap-1 text-[#E8303A] text-[12px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <p className="text-[11px] text-[#162D20]/38 font-medium tracking-wide">{product.origin}</p>
+                          <span className="flex items-center gap-1 text-[#237049] text-[12px] font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                             Explore <ArrowRight size={12} />
                           </span>
                         </div>
@@ -232,7 +256,7 @@ export default function Products() {
       </section>
 
       {/* ── FOOTER NOTE ── */}
-      <div className="bg-[#1C2951] py-10">
+      <div className="bg-[#162D20] py-10">
         <div className="section-container text-center">
           <p className="text-white/30 text-sm font-light">
             Sourced exclusively via <span className="text-white/60 font-medium">Aeden Fruits International Pvt Ltd</span>

@@ -20,7 +20,7 @@ export default async function AdminStoresPage({
   const supabase = await createClient();
   const { data: stores } = await supabase
     .from("stores")
-    .select("id, name, pincode, phone, is_active")
+    .select("id, name, pincode, phone, whatsapp_phone, erp_store_code, is_active")
     .order("name");
 
   return (
@@ -46,6 +46,7 @@ export default async function AdminStoresPage({
                 <th className="px-6 py-4">Store</th>
                 <th className="px-6 py-4">Pincode</th>
                 <th className="px-6 py-4">Phone</th>
+                <th className="px-6 py-4">WhatsApp / ERP</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4" />
               </tr>
@@ -56,6 +57,10 @@ export default async function AdminStoresPage({
                   <td className="px-6 py-4 font-medium">{s.name}</td>
                   <td className="px-6 py-4">{s.pincode}</td>
                   <td className="px-6 py-4 text-muted-foreground">{s.phone ?? "—"}</td>
+                  <td className="px-6 py-4 text-xs text-muted-foreground">
+                    <span className="block">{s.whatsapp_phone || "No dispatch number"}</span>
+                    <span className="text-accent font-semibold">{s.erp_store_code || "No ERP code"}</span>
+                  </td>
                   <td className="px-6 py-4">
                     <Badge variant={s.is_active ? "accent" : "muted"}>
                       {s.is_active ? "Active" : "Inactive"}
@@ -70,7 +75,7 @@ export default async function AdminStoresPage({
               ))}
               {(stores ?? []).length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                     No stores yet — run the seed migration or add one below.
                   </td>
                 </tr>
@@ -110,8 +115,16 @@ export default async function AdminStoresPage({
               <Label htmlFor="phone">Phone</Label>
               <Input id="phone" name="phone" placeholder="+91 484 …" />
             </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="whatsapp_phone">Store WhatsApp</Label>
+              <Input id="whatsapp_phone" name="whatsapp_phone" inputMode="tel" placeholder="919876543210" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="erp_store_code">ERP store code</Label>
+              <Input id="erp_store_code" name="erp_store_code" placeholder="KAD" />
+            </div>
             <div className="flex items-end gap-2 pb-1">
-              <input id="is_active" name="is_active" type="checkbox" defaultChecked className="h-4 w-4 accent-[#5C8C2F]" />
+              <input id="is_active" name="is_active" type="checkbox" defaultChecked className="h-4 w-4 accent-[#237049]" />
               <Label htmlFor="is_active">Active</Label>
             </div>
             <div className="flex items-end">

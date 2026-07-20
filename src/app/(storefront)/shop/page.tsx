@@ -12,6 +12,7 @@ import {
   Pause,
   Salad,
   ShieldCheck,
+  ShoppingBag,
   Sparkles,
   Truck,
 } from "lucide-react";
@@ -141,15 +142,15 @@ export default async function HomePage() {
       <section className="section-container grid min-h-[720px] items-center gap-12 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:py-16">
         <div className="relative z-10 flex flex-col items-start">
           <span className="eyebrow">
-            <span className="bg-accent h-px w-8" /> Kochi’s modern fresh kitchen
+            <span className="bg-accent h-px w-8" /> Fresh Commerce by Aeden
           </span>
           <h1 className="display-title text-balance mt-7">
             Feel good food,
             <span className="text-accent block italic">made around you.</span>
           </h1>
           <p className="text-muted-foreground mt-7 max-w-xl text-[15px] leading-7 md:text-base">
-            Personalised bowls, honest nutrition, and recurring deliveries that move
-            with your week. Fresh eating finally feels as easy as it should.
+            Born from Aeden Fresh’s four Kochi stores: personalised bowls, honest
+            nutrition, and recurring deliveries that move with your week.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" className="glow-leaf h-13 px-6">
@@ -159,6 +160,9 @@ export default async function HomePage() {
               <Link href="/baskets">Shop chef’s menu</Link>
             </Button>
           </div>
+          <Link href="/" className="text-accent mt-5 inline-flex items-center gap-2 text-xs font-semibold transition-colors hover:text-foreground">
+            Discover the Aeden Fresh story <ArrowUpRight size={13} />
+          </Link>
           <div className="border-border/70 mt-10 grid w-full max-w-lg grid-cols-3 border-y py-5">
             {[
               ["6", "guided build steps"],
@@ -181,6 +185,8 @@ export default async function HomePage() {
               src="https://images.unsplash.com/photo-1543362906-acfc16c67564?w=1400&q=90&auto=format&fit=crop"
               alt="Colourful fresh bowl with greens, avocado and vegetables"
               className="h-full w-full object-cover"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
           <div className="border-background shadow-luxe-lg absolute bottom-0 left-0 h-52 w-44 overflow-hidden rounded-[5rem_5rem_1.5rem_1.5rem] border-[7px] sm:h-64 sm:w-52">
@@ -227,6 +233,33 @@ export default async function HomePage() {
       </section>
 
       <section className="section-container py-16 lg:py-24">
+        <div className="bg-secondary text-secondary-foreground paper-noise shadow-luxe-lg grid overflow-hidden rounded-[2rem] lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="relative z-10 flex flex-col items-start justify-center p-7 md:p-10 lg:p-14">
+            <span className="text-primary inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.22em] uppercase">
+              <ShoppingBag size={13} /> New · the Aeden store online
+            </span>
+            <h2 className="mt-4 text-5xl leading-[0.88] text-white md:text-6xl">Fresh groceries.<br /><span className="text-primary italic">Store to door.</span></h2>
+            <p className="mt-5 max-w-md text-sm leading-7 text-white/58">
+              Shop imported fruit, everyday produce, bakery and chilled essentials with live availability from your nearest Aeden store.
+            </p>
+            <Button asChild size="lg" className="mt-7 bg-primary text-primary-foreground hover:bg-primary/90">
+              <Link href="/groceries">Shop fresh groceries <ArrowRight /></Link>
+            </Button>
+            <p className="mt-4 text-[10px] font-semibold tracking-wide text-white/38">Nearest-store routing · secure checkout · local fulfilment</p>
+          </div>
+          <div className="image-zoom min-h-[360px] overflow-hidden lg:min-h-[520px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1400&q=88&auto=format&fit=crop"
+              alt="Fresh fruit and vegetables displayed in a premium grocery store"
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="section-container pb-16 lg:pb-24">
         <div className="bg-muted/75 border-border/70 shadow-luxe grid items-center gap-8 rounded-[2rem] border p-6 md:p-8 lg:grid-cols-[0.7fr_1.3fr] lg:p-10">
           <div>
             <span className="eyebrow"><Clock3 size={13} /> Check your neighbourhood</span>

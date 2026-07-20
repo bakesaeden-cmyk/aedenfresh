@@ -58,6 +58,7 @@ export function DeliveryAvailability() {
       };
       const resolved = { ...data.store, delivery_fee: data.delivery_fee };
       localStorage.setItem(STORE_KEY, JSON.stringify(resolved));
+      window.dispatchEvent(new Event("af-store-changed"));
       setStore(resolved);
       router.push("/build");
     } catch {

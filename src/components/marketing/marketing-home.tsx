@@ -54,7 +54,7 @@ function ScrollProgress() {
   const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 });
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-[2px] bg-[#E8303A] z-[200] origin-left"
+      className="fixed top-0 left-0 right-0 h-[2px] bg-[#83B13E] z-[200] origin-left"
       style={{ scaleX }}
     />
   );
@@ -150,15 +150,15 @@ function WordReveal({ text, className = "" }: { text: string; className?: string
 function EyebrowLabel({ children }: { children: React.ReactNode }) {
   return (
     <motion.p variants={fadeUp}
-      className="flex items-center gap-3 text-[#5C8C2F] text-[11px] font-semibold tracking-[0.28em] uppercase mb-5">
-      <span className="w-7 h-px bg-[#5C8C2F]" />{children}
+      className="flex items-center gap-3 text-[#237049] text-[11px] font-semibold tracking-[0.28em] uppercase mb-5">
+      <span className="w-7 h-px bg-[#237049]" />{children}
     </motion.p>
   );
 }
 
 function RedRule() {
   return (
-    <motion.div className="h-[1.5px] bg-[#E8303A] mb-10 origin-left"
+    <motion.div className="h-[1.5px] bg-[#83B13E] mb-10 origin-left"
       style={{ width: 60 }}
       initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
       viewport={{ once: true }} transition={{ duration: 0.8, ease: "easeOut" }} />
@@ -195,7 +195,7 @@ function Counter({ value, suffix = "", label }: { value: number; suffix?: string
           animate={{ scale: [1, 1.12, 1], opacity: [0.15, 0.35, 0.15] }}
           transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }} />
         <p className="relative text-[5rem] md:text-[6.5rem] font-serif font-light text-white leading-none tracking-tight">
-          {n}<span className="text-[#E8303A]">{suffix}</span>
+          {n}<span className="text-[#83B13E]">{suffix}</span>
         </p>
       </div>
       <p className="text-[11px] font-semibold tracking-[0.24em] uppercase text-white/35 mt-7">{label}</p>
@@ -211,35 +211,35 @@ const DEPARTMENTS = [
     sub: "80+ varieties · 10+ source countries",
     desc: "Pink Lady®, Shine Muscat, Zespri® SunGold, Driscoll's® berries and 80 more — exclusively through Aeden Fruits International's global supply chain.",
     img: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=900&q=80&auto=format&fit=crop",
-    accent: "#5C8C2F",
+    accent: "#237049",
   },
   {
     n: "02", emoji: "🥦", title: "Fresh Vegetables",
     sub: "Sourced daily · Seasonal & staple",
     desc: "From everyday staples to specialty greens — sourced fresh daily and delivered to every Aeden Fresh store in Kochi.",
     img: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=900&q=80&auto=format&fit=crop",
-    accent: "#5C8C2F",
+    accent: "#237049",
   },
   {
     n: "03", emoji: "🥐", title: "Artisan Bakery",
     sub: "Baked in-store every morning",
     desc: "Croissants, sourdough, pastries and cakes — baked fresh in-store daily. Step in to the aroma every morning at Aeden Fresh.",
     img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=900&q=80&auto=format&fit=crop",
-    accent: "#c8922a",
+    accent: "#B6823A",
   },
   {
     n: "04", emoji: "🧀", title: "Premium Dairy",
     sub: "Chilled · Artisan · Curated",
     desc: "Fresh milk, artisan cheeses, Greek yoghurt and premium chilled products — curated for the discerning Kerala household.",
     img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=900&q=80&auto=format&fit=crop",
-    accent: "#E8303A",
+    accent: "#83B13E",
   },
   {
     n: "05", emoji: "🥗", title: "Salads & Smoothies",
     sub: "Made fresh · In-store bar",
     desc: "Cold-pressed juices, seasonal smoothie blends and gourmet salads crafted in-store with the freshest produce — your daily wellness ritual.",
     img: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=900&q=80&auto=format&fit=crop",
-    accent: "#5C8C2F",
+    accent: "#237049",
   },
 ];
 
@@ -365,13 +365,13 @@ function VideoCard({
         className="absolute inset-0 w-full h-full object-cover scale-[1.04] group-hover:scale-110 transition-transform duration-[1200ms] ease-out"
       />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#020810]/92 via-[#020810]/38 to-[#020810]/8 group-hover:from-[#020810]/80 transition-colors duration-600" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#071A10]/92 via-[#071A10]/38 to-[#071A10]/8 group-hover:from-[#071A10]/80 transition-colors duration-600" />
       <div className="grain-overlay absolute inset-0 pointer-events-none" />
 
       {/* Play button */}
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
-          className="w-16 h-16 rounded-full bg-white/12 border border-white/28 flex items-center justify-center backdrop-blur-md text-white group-hover:bg-[#E8303A] group-hover:border-[#E8303A] group-hover:scale-110 transition-all duration-500 shadow-2xl"
+          className="w-16 h-16 rounded-full bg-white/12 border border-white/28 flex items-center justify-center backdrop-blur-md text-white group-hover:bg-[#83B13E] group-hover:text-[#122119] group-hover:border-[#83B13E] group-hover:scale-110 transition-all duration-500 shadow-2xl"
         >
           <PlayIcon />
         </motion.div>
@@ -409,10 +409,10 @@ function VideoSection() {
 
   return (
     <>
-      <section className="bg-[#040b14] py-28 lg:py-40 relative overflow-hidden">
+      <section className="bg-[#0C2217] py-28 lg:py-40 relative overflow-hidden">
         <div className="grain-overlay absolute inset-0 pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 60% 55% at 50% 100%, rgba(232,48,58,0.07) 0%, transparent 70%)" }} />
+          style={{ background: "radial-gradient(ellipse 60% 55% at 50% 100%, rgba(141,189,63,0.09) 0%, transparent 70%)" }} />
 
         <div className="relative section-container">
           <Reveal className="max-w-2xl mb-14 lg:mb-18">
@@ -444,14 +444,14 @@ function VideoSection() {
               preload="metadata"
               className="absolute inset-0 w-full h-full object-cover scale-[1.03] transition-transform duration-[1400ms] ease-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020810]/90 via-[#020810]/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#071A10]/90 via-[#071A10]/20 to-transparent" />
             <div className="grain-overlay absolute inset-0 pointer-events-none" />
 
             {/* Centre play button */}
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div
                 className="w-24 h-24 rounded-full bg-white/10 border border-white/25 flex items-center justify-center backdrop-blur-md text-white shadow-2xl"
-                whileHover={{ scale: 1.18, backgroundColor: "rgba(232,48,58,0.85)", borderColor: "rgba(232,48,58,0.85)" }}
+                whileHover={{ scale: 1.18, backgroundColor: "rgba(141,189,63,0.9)", borderColor: "rgba(141,189,63,0.9)", color: "#122119" }}
                 transition={{ duration: 0.4, ease: EASE_EXPO }}
               >
                 <PlayIcon />
@@ -467,7 +467,7 @@ function VideoSection() {
 
             {/* Bottom text */}
             <div className="absolute bottom-0 inset-x-0 p-10 lg:p-16">
-              <p className="text-[#E8303A] text-[11px] font-semibold tracking-[0.2em] uppercase mb-3">
+              <p className="text-[#83B13E] text-[11px] font-semibold tracking-[0.2em] uppercase mb-3">
                 Greens Angaadi → Aeden Fresh
               </p>
               <h3 className="font-serif text-white text-[2.4rem] lg:text-[3.6rem] leading-[0.9] tracking-[-0.03em] mb-4">
@@ -568,7 +568,7 @@ function CustomCursor() {
 
       {/* Red trailing dot */}
       <motion.div
-        className="fixed top-0 left-0 z-[9999] pointer-events-none rounded-full bg-[#E8303A] hidden md:block"
+        className="fixed top-0 left-0 z-[9999] pointer-events-none rounded-full bg-[#83B13E] hidden md:block"
         style={{ x, y, translateX: "-50%", translateY: "-50%", width: 5, height: 5 }}
       />
     </>
@@ -593,11 +593,10 @@ function Navbar() {
     { href: "#franchise", label: "Franchise" },
     { href: "#story",     label: "Our Story" },
     { href: "#contact",   label: "Contact" },
-    { href: "/shop",      label: "Shop" },
   ];
 
-  const navBg  = scrolled ? "bg-[#FAF7F2]/96 backdrop-blur-xl shadow-[0_1px_0_rgba(0,0,0,0.06)] py-3" : "bg-transparent py-5";
-  const color   = scrolled ? "text-[#1C2951]" : "text-white";
+  const navBg  = scrolled ? "bg-[#F9F7F1]/96 backdrop-blur-xl shadow-[0_1px_0_rgba(0,0,0,0.06)] py-3" : "bg-transparent py-5";
+  const color   = scrolled ? "text-[#162D20]" : "text-white";
 
   return (
     <motion.nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${navBg}`}
@@ -612,21 +611,21 @@ function Navbar() {
           />
         </a>
 
-        <div className="hidden lg:flex items-center gap-9">
-          <div className={`flex gap-9 text-[13px] font-medium tracking-wide ${color}`}>
+        <div className="hidden lg:flex items-center gap-7">
+          <div className={`flex gap-7 text-[12px] font-semibold tracking-wide ${color}`}>
             {links.map(l => (
               l.href.startsWith("/")
                 ? <Link key={l.label} href={l.href} className="nav-link opacity-75 hover:opacity-100 transition-opacity">{l.label}</Link>
                 : <a key={l.label} href={l.href} className="nav-link opacity-75 hover:opacity-100 transition-opacity">{l.label}</a>
             ))}
           </div>
-          <Magnetic href="#stores"
-            className="bg-[#E8303A] hover:bg-[#cc2b34] text-white rounded-full px-6 h-10 text-[13px] font-semibold inline-flex items-center transition-colors duration-300 shadow-lg shadow-red-900/25">
-            Find a Store
+          <Magnetic href="/shop"
+            className="bg-[#83B13E] hover:bg-[#A1CF58] text-[#122119] rounded-full px-6 h-10 text-[13px] font-bold inline-flex items-center gap-2 transition-colors duration-300 shadow-lg shadow-green-950/25">
+            Shop Fresh <ArrowRight size={13} />
           </Magnetic>
         </div>
 
-        <button className={`lg:hidden p-2 ${color}`} onClick={() => setOpen(p => !p)}>
+        <button aria-label="Toggle navigation" aria-expanded={open} className={`lg:hidden p-2 ${color}`} onClick={() => setOpen(p => !p)}>
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
@@ -636,14 +635,15 @@ function Navbar() {
           <motion.div
             initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }}
-            className="absolute top-full inset-x-0 bg-[#FAF7F2] border-t border-black/5 shadow-2xl overflow-hidden">
+            className="absolute top-full inset-x-0 bg-[#F9F7F1] border-t border-black/5 shadow-2xl overflow-hidden">
             <div className="py-6 px-6 flex flex-col gap-5">
               {links.map(l => (
                 l.href.startsWith("/")
-                  ? <Link key={l.label} href={l.href} className="text-[#1C2951] font-medium text-lg" onClick={() => setOpen(false)}>{l.label}</Link>
-                  : <a key={l.label} href={l.href} className="text-[#1C2951] font-medium text-lg" onClick={() => setOpen(false)}>{l.label}</a>
+                  ? <Link key={l.label} href={l.href} className="text-[#162D20] font-medium text-lg" onClick={() => setOpen(false)}>{l.label}</Link>
+                  : <a key={l.label} href={l.href} className="text-[#162D20] font-medium text-lg" onClick={() => setOpen(false)}>{l.label}</a>
               ))}
-              <Link href="/stores" className="bg-[#E8303A] text-white rounded-full py-3 text-center text-sm font-semibold" onClick={() => setOpen(false)}>Find a Store</Link>
+              <Link href="/shop" className="bg-[#83B13E] text-[#122119] rounded-full py-3 text-center text-sm font-bold" onClick={() => setOpen(false)}>Shop Fresh</Link>
+              <Link href="/stores" className="border border-[#162D20]/15 text-[#162D20] rounded-full py-3 text-center text-sm font-semibold" onClick={() => setOpen(false)}>Find a Store</Link>
             </div>
           </motion.div>
         )}
@@ -667,7 +667,6 @@ export default function Home() {
   const [activeDept, setActiveDept] = useState(0);
   const [showTop, setShowTop] = useState(false);
   const [heroMuted, setHeroMuted] = useState(true);
-  const [heroTextVisible, setHeroTextVisible] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   const rangeItems = activeRange === "imported" ? FRUITS : activeRange === "indian" ? INDIAN_VARIETIES : PRODUCE;
@@ -744,14 +743,11 @@ export default function Home() {
   // Start the hero immediately; there is intentionally no logo intro/preloader.
   useEffect(() => {
     heroVideoRef.current?.play().catch(() => {});
-    setHeroTextVisible(true);
-    const t = setTimeout(() => setHeroTextVisible(false), 2800);
-    return () => clearTimeout(t);
   }, []);
 
   return (
     <>
-    <div className="marketing-site w-full min-h-screen overflow-x-hidden bg-[#FAF7F2]">
+    <div className="marketing-site w-full min-h-screen overflow-x-hidden bg-[#F9F7F1]">
       <CustomCursor />
       <ScrollProgress />
       <Navbar />
@@ -764,6 +760,8 @@ export default function Home() {
           <video
             ref={heroVideoRef}
             src="/ad-video.mp4"
+            poster="/opengraph.jpg"
+            preload="metadata"
             loop
             playsInline
             muted={heroMuted}
@@ -772,38 +770,31 @@ export default function Home() {
         </motion.div>
 
         {/* Cinematic gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/70 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/5 to-[#071A10]/90 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#071A10]/72 via-black/15 to-transparent pointer-events-none" />
         <div className="grain-overlay absolute inset-0 pointer-events-none" />
 
-        {/* ── HERO TEXT — animates in then fades out ── */}
-        <AnimatePresence>
-          {heroTextVisible && (
-            <motion.div
-              className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-6 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { duration: 1.1, ease: EASE_EXPO } }}
-              exit={{ opacity: 0, filter: "blur(8px)", y: -20, transition: { duration: 1.3, ease: EASE_EXPO } }}
-            >
-              <motion.div
-                initial={{ y: 90, opacity: 0, filter: "blur(12px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                transition={{ duration: 1.15, ease: EASE_EXPO }}
-                className="text-[clamp(3.8rem,10vw,9.5rem)] font-serif text-white leading-[0.86] tracking-[-0.035em] drop-shadow-2xl"
-              >
-                Fresh From<br />the World.
-              </motion.div>
-              <motion.div
-                initial={{ y: 55, opacity: 0, filter: "blur(8px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                transition={{ duration: 1.0, delay: 0.22, ease: EASE_EXPO }}
-                className="text-[clamp(2rem,4.8vw,5rem)] font-serif italic text-[#E8303A] mt-5 drop-shadow-xl"
-              >
-                Fresh to Your Table.
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Persistent brand promise: clear enough to convert, quiet enough to let the film lead. */}
+        <motion.div
+          className="absolute top-[23%] left-0 right-0 z-10 section-container pointer-events-none"
+          style={{ opacity: heroFade }}
+          initial={{ opacity: 0, y: 44 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.15, delay: 0.35, ease: EASE_EXPO }}
+        >
+          <div className="max-w-[760px]">
+            <p className="mb-5 flex items-center gap-3 text-[10px] font-bold tracking-[0.26em] text-white/60 uppercase">
+              <span className="h-px w-9 bg-[#83B13E]" /> Aeden Fresh · Kochi since 2010
+            </p>
+            <h1 className="text-[clamp(3.15rem,7vw,7.2rem)] font-serif text-white leading-[0.88] tracking-[-0.04em] drop-shadow-2xl">
+              Fresh from the world.
+              <span className="mt-2 block italic text-[#A6D55E]">Fresh to your table.</span>
+            </h1>
+            <p className="mt-6 max-w-lg text-sm leading-6 text-white/68 sm:text-base sm:leading-7">
+              Exceptional produce, thoughtful sourcing and food made fresh for the way Kochi lives now.
+            </p>
+          </div>
+        </motion.div>
 
         {/* ── Mute / Unmute button ── */}
         <motion.button
@@ -815,6 +806,7 @@ export default function Home() {
           onMouseEnter={() => pushCursorLabel(heroMuted ? "UNMUTE" : "MUTE")}
           onMouseLeave={() => pushCursorClear()}
           title={heroMuted ? "Unmute" : "Mute"}
+          aria-label={heroMuted ? "Unmute hero film" : "Mute hero film"}
         >
           {heroMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
         </motion.button>
@@ -827,29 +819,29 @@ export default function Home() {
           <div>
             <motion.div className="flex items-center gap-3 mb-6"
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 3.0, ease: EASE_OUT }}>
-              <span className="w-2 h-2 rounded-full bg-[#5C8C2F] pulse-ring" />
+              transition={{ duration: 0.8, delay: 1.1, ease: EASE_OUT }}>
+              <span className="w-2 h-2 rounded-full bg-[#237049] pulse-ring" />
               <span className="text-white/40 text-[11px] font-semibold tracking-[0.28em] uppercase">
                 4 Stores · Kochi, Kerala · Est. 2010
               </span>
             </motion.div>
             <motion.div className="flex flex-wrap gap-4"
               initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.75, delay: 3.15, ease: EASE_OUT }}>
-              <Magnetic href="#stores"
-                className="bg-[#E8303A] hover:bg-[#cc2b34] text-white rounded-full px-9 h-12 text-[14px] font-semibold inline-flex items-center gap-2 transition-colors duration-300 shadow-2xl shadow-red-900/40">
-                Find a Store <ArrowRight size={14} />
+              transition={{ duration: 0.75, delay: 1.25, ease: EASE_OUT }}>
+              <Magnetic href="/shop"
+                className="bg-[#83B13E] hover:bg-[#A1CF58] text-[#122119] rounded-full px-9 h-12 text-[14px] font-bold inline-flex items-center gap-2 transition-colors duration-300 shadow-2xl shadow-green-950/40">
+                Shop Fresh <ArrowRight size={14} />
               </Magnetic>
-              <Magnetic href="#franchise"
+              <Magnetic href="#stores"
                 className="rounded-full px-9 h-12 text-[14px] text-white border border-white/22 bg-white/8 hover:bg-white/16 inline-flex items-center font-medium backdrop-blur-sm transition-all duration-300">
-                Franchise Opportunity
+                Find a Store
               </Magnetic>
             </motion.div>
           </div>
 
           {/* Scroll indicator */}
           <motion.div className="flex flex-col items-center gap-2 mb-1"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.4 }}>
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
             <span className="text-white/25 text-[10px] tracking-[0.28em] uppercase">Scroll</span>
             <div className="w-px h-14 overflow-hidden rounded-full">
               <motion.div className="w-full h-full bg-gradient-to-b from-white/50 to-transparent"
@@ -861,7 +853,7 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── TICKER ───────────────────────────── */}
-      <div className="bg-[#0a1220] overflow-hidden ticker-fade">
+      <div className="bg-[#122119] overflow-hidden ticker-fade">
         {/* Row 1 — left */}
         <div className="py-3 border-b border-white/[0.04]">
           <div className="marquee flex items-center" style={{ animationDuration: "42s" }}>
@@ -874,7 +866,7 @@ export default function Home() {
                 ].map((item, j) => (
                   <React.Fragment key={j}>
                     <span className="text-white/38 text-[10.5px] font-semibold tracking-[0.22em] uppercase px-7 flex-shrink-0">{item}</span>
-                    <span className="w-[3px] h-[3px] rounded-full bg-[#E8303A]/50 flex-shrink-0" />
+                    <span className="w-[3px] h-[3px] rounded-full bg-[#83B13E]/50 flex-shrink-0" />
                   </React.Fragment>
                 ))}
               </span>
@@ -916,22 +908,22 @@ export default function Home() {
             initial={{ opacity: 0, y: 48 }}
             animate={deptInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 48 }}
             transition={{ duration: 0.9, ease: EASE_EXPO }}>
-            <div className="inline-flex items-center gap-2 border border-[#1C2951]/12 rounded-full px-4 py-1.5 mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E8303A]" />
-              <span className="text-[10.5px] font-bold tracking-[0.22em] uppercase text-[#1C2951]/50">Our Departments</span>
+            <div className="inline-flex items-center gap-2 border border-[#162D20]/12 rounded-full px-4 py-1.5 mb-8">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#83B13E]" />
+              <span className="text-[10.5px] font-bold tracking-[0.22em] uppercase text-[#162D20]/50">Our Departments</span>
             </div>
-            <h2 className="text-5xl md:text-6xl lg:text-[4.8rem] font-serif text-[#1C2951] leading-[0.92] tracking-[-0.03em] mb-5">
+            <h2 className="text-5xl md:text-6xl lg:text-[4.8rem] font-serif text-[#162D20] leading-[0.92] tracking-[-0.03em] mb-5">
               Everything Fresh,{" "}
-              <em className="text-[#E8303A] not-italic">All Under One Roof.</em>
+              <em className="text-[#237049] not-italic">All Under One Roof.</em>
             </h2>
-            <p className="text-[#1C2951]/42 text-[1.05rem] max-w-lg mx-auto font-light leading-relaxed">
+            <p className="text-[#162D20]/42 text-[1.05rem] max-w-lg mx-auto font-light leading-relaxed">
               Five curated departments — each sourced to the highest premium standard and delivered fresh daily to all four Kochi stores.
             </p>
           </motion.div>
 
           {/* ── Department tabs ── */}
           <motion.div
-            className="flex justify-center flex-wrap gap-x-7 gap-y-0 border-b border-[#1C2951]/8 mb-20"
+            className="flex justify-center flex-wrap gap-x-7 gap-y-0 border-b border-[#162D20]/8 mb-20"
             initial={{ opacity: 0, y: 24 }}
             animate={deptInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.15 }}>
@@ -940,8 +932,8 @@ export default function Home() {
                 onClick={() => { setActiveDept(i); deptHoveredRef.current = true; }}
                 className={`pb-4 text-[13.5px] font-medium transition-all duration-300 border-b-2 -mb-px whitespace-nowrap ${
                   activeDept === i
-                    ? "text-[#1C2951] border-[#1C2951]"
-                    : "text-[#1C2951]/32 border-transparent hover:text-[#1C2951]/60"
+                    ? "text-[#162D20] border-[#162D20]"
+                    : "text-[#162D20]/32 border-transparent hover:text-[#162D20]/60"
                 }`}>
                 {dept.emoji} {dept.title}
               </button>
@@ -989,17 +981,17 @@ export default function Home() {
                         )}
                         {offset === 0 && (
                           <div className="absolute top-4 left-4">
-                            <span className="text-[9px] font-bold tracking-[0.22em] uppercase px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-[#1C2951] shadow-sm">
+                            <span className="text-[9px] font-bold tracking-[0.22em] uppercase px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-[#162D20] shadow-sm">
                               {dept.sub}
                             </span>
                           </div>
                         )}
                       </div>
                       {/* Card footer */}
-                      <div className="p-6 text-center border-t border-[#1C2951]/5">
+                      <div className="p-6 text-center border-t border-[#162D20]/5">
                         <span className="text-2xl block mb-1.5">{dept.emoji}</span>
                         <h3 className={`font-serif transition-all duration-300 ${
-                          offset === 0 ? "text-xl text-[#1C2951]" : "text-base text-[#1C2951]/45"
+                          offset === 0 ? "text-xl text-[#162D20]" : "text-base text-[#162D20]/45"
                         }`}>{dept.title}</h3>
                       </div>
                     </div>
@@ -1017,7 +1009,7 @@ export default function Home() {
               <button
                 onClick={() => { setActiveDept(p => Math.max(0, p - 1)); deptHoveredRef.current = true; }}
                 disabled={activeDept === 0}
-                className="w-11 h-11 rounded-full border border-[#E8303A]/35 flex items-center justify-center text-[#E8303A] hover:bg-[#E8303A] hover:text-white hover:border-[#E8303A] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
+                className="w-11 h-11 rounded-full border border-[#237049]/35 flex items-center justify-center text-[#237049] hover:bg-[#83B13E] hover:text-[#122119] hover:border-[#83B13E] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
                 <ChevronLeft size={18} />
               </button>
               {/* Dot indicators */}
@@ -1025,14 +1017,14 @@ export default function Home() {
                 {DEPARTMENTS.map((_, i) => (
                   <button key={i} onClick={() => { setActiveDept(i); deptHoveredRef.current = true; }}
                     className={`rounded-full transition-all duration-400 ${
-                      activeDept === i ? "w-5 h-2 bg-[#1C2951]" : "w-2 h-2 bg-[#1C2951]/20 hover:bg-[#1C2951]/40"
+                      activeDept === i ? "w-5 h-2 bg-[#162D20]" : "w-2 h-2 bg-[#162D20]/20 hover:bg-[#162D20]/40"
                     }`} />
                 ))}
               </div>
               <button
                 onClick={() => { setActiveDept(p => Math.min(DEPARTMENTS.length - 1, p + 1)); deptHoveredRef.current = true; }}
                 disabled={activeDept === DEPARTMENTS.length - 1}
-                className="w-11 h-11 rounded-full border border-[#E8303A]/35 flex items-center justify-center text-[#E8303A] hover:bg-[#E8303A] hover:text-white hover:border-[#E8303A] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
+                className="w-11 h-11 rounded-full border border-[#237049]/35 flex items-center justify-center text-[#237049] hover:bg-[#83B13E] hover:text-[#122119] hover:border-[#83B13E] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
                 <ChevronRight size={18} />
               </button>
             </motion.div>
@@ -1044,7 +1036,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.42 }}
               className="text-center mt-10 max-w-md mx-auto">
-              <p className="text-[#1C2951]/45 font-light leading-relaxed text-[15px]">
+              <p className="text-[#162D20]/45 font-light leading-relaxed text-[15px]">
                 {DEPARTMENTS[activeDept].desc}
               </p>
             </motion.div>
@@ -1057,7 +1049,7 @@ export default function Home() {
       <section
         id="range"
         ref={rangeSectionRef}
-        className="bg-[#080f1e] py-28 lg:py-36 overflow-hidden relative"
+        className="bg-[#122119] py-28 lg:py-36 overflow-hidden relative"
         onMouseMove={onRangeMouseMove}
         onMouseEnter={() => { rangeHoveredRef.current = true; }}
         onMouseLeave={onRangeMouseLeave}>
@@ -1072,12 +1064,12 @@ export default function Home() {
             animate={rangeInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 48 }}
             transition={{ duration: 0.9, ease: EASE_EXPO }}>
             <div className="inline-flex items-center gap-2 border border-white/10 rounded-full px-4 py-1.5 mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E8303A]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#83B13E]" />
               <span className="text-[10.5px] font-bold tracking-[0.22em] uppercase text-white/40">Our Products</span>
             </div>
             <h2 className="text-5xl md:text-6xl lg:text-[4.8rem] font-serif text-white leading-[0.92] tracking-[-0.03em] mb-5">
               Premium Produce,{" "}
-              <em className="text-[#E8303A] not-italic">All Varieties.</em>
+              <em className="text-[#83B13E] not-italic">All Varieties.</em>
             </h2>
             <p className="text-white/38 text-[1.05rem] max-w-lg mx-auto font-light leading-relaxed">
               Imported fruits sourced from trusted global growers, stored with care, and delivered fresh to all four Aeden Fresh stores in Kochi.
@@ -1137,8 +1129,8 @@ export default function Home() {
                       onClick={e => { if (offset !== 0) { e.preventDefault(); setActiveRangeItem(i); } }}>
                       <div className={`rounded-3xl overflow-hidden transition-all duration-500 ${
                         offset === 0
-                          ? "bg-[#0d1a2e] shadow-[0_40px_100px_rgba(0,0,0,0.55)] ring-1 ring-white/8"
-                          : "bg-[#0a1525] shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-white/4"
+                          ? "bg-[#162D20] shadow-[0_40px_100px_rgba(0,0,0,0.55)] ring-1 ring-white/8"
+                          : "bg-[#102D1E] shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-white/4"
                       }`}>
                         {/* Product image */}
                         <div className="relative h-[280px] md:h-[320px] overflow-hidden">
@@ -1147,10 +1139,10 @@ export default function Home() {
                             loading="lazy"
                             className="w-full h-full object-cover transition-transform duration-700 hover:scale-106" />
                           {/* dark gradient always */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#0d1a2e]/80 via-[#0d1a2e]/20 to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#162D20]/80 via-[#162D20]/20 to-transparent" />
                           {/* extra dim on side cards */}
                           {offset !== 0 && (
-                            <div className="absolute inset-0 bg-[#080f1e]/45" />
+                            <div className="absolute inset-0 bg-[#122119]/45" />
                           )}
                           {/* Tag on active */}
                           {offset === 0 && (
@@ -1166,7 +1158,7 @@ export default function Home() {
                           {/* Origin on image bottom */}
                           <div className="absolute bottom-3 left-4">
                             <span className={`text-[9px] font-bold tracking-[0.18em] uppercase transition-colors duration-300 ${
-                              offset === 0 ? "text-[#5C8C2F]" : "text-white/20"
+                              offset === 0 ? "text-[#237049]" : "text-white/20"
                             }`}>{fruit.origin}</span>
                           </div>
                         </div>
@@ -1198,7 +1190,7 @@ export default function Home() {
               <button
                 onClick={() => { setActiveRangeItem(p => Math.max(0, p - 1)); rangeHoveredRef.current = true; }}
                 disabled={activeRangeItem === 0}
-                className="w-11 h-11 rounded-full border border-[#E8303A]/35 flex items-center justify-center text-[#E8303A] hover:bg-[#E8303A] hover:text-white hover:border-[#E8303A] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
+                className="w-11 h-11 rounded-full border border-[#83B13E]/35 flex items-center justify-center text-[#83B13E] hover:bg-[#83B13E] hover:text-[#122119] hover:border-[#83B13E] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
                 <ChevronLeft size={18} />
               </button>
               <div className="flex items-center gap-2">
@@ -1213,7 +1205,7 @@ export default function Home() {
               <button
                 onClick={() => { setActiveRangeItem(p => Math.min(rangeItems.length - 1, p + 1)); rangeHoveredRef.current = true; }}
                 disabled={activeRangeItem === rangeItems.length - 1}
-                className="w-11 h-11 rounded-full border border-[#E8303A]/35 flex items-center justify-center text-[#E8303A] hover:bg-[#E8303A] hover:text-white hover:border-[#E8303A] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
+                className="w-11 h-11 rounded-full border border-[#83B13E]/35 flex items-center justify-center text-[#83B13E] hover:bg-[#83B13E] hover:text-[#122119] hover:border-[#83B13E] transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed">
                 <ChevronRight size={18} />
               </button>
             </motion.div>
@@ -1234,7 +1226,7 @@ export default function Home() {
           {/* Footer link */}
           <div className="text-center mt-10">
             <Magnetic href="https://aedenfruits.com"
-              className="rounded-full border border-white/12 bg-white/5 hover:bg-white hover:text-[#080f1e] text-white/55 hover:text-[#080f1e] px-8 h-11 text-[13px] font-medium inline-flex items-center gap-2 transition-all duration-300 backdrop-blur-sm">
+              className="rounded-full border border-white/12 bg-white/5 hover:bg-white hover:text-[#122119] text-white/55 hover:text-[#122119] px-8 h-11 text-[13px] font-medium inline-flex items-center gap-2 transition-all duration-300 backdrop-blur-sm">
               Sourced via Aeden Fruits International <Globe size={13} />
             </Magnetic>
           </div>
@@ -1243,7 +1235,7 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── STATS ────────────────────────────── */}
-      <section className="bg-[#1C2951] py-28 lg:py-36 relative overflow-hidden">
+      <section className="bg-[#162D20] py-28 lg:py-36 relative overflow-hidden">
         <div className="grain-overlay absolute inset-0 pointer-events-none" />
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
           <span className="text-[22vw] font-serif font-bold text-white/[0.022] leading-none">FRESH</span>
@@ -1262,7 +1254,7 @@ export default function Home() {
       <VideoSection />
 
       {/* ─────────────────── OUR STORES ──────────────────────── */}
-      <section id="stores" className="bg-[#FAF7F2] py-32 lg:py-44">
+      <section id="stores" className="bg-[#F9F7F1] py-32 lg:py-44">
         <div className="section-container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
             <div>
@@ -1271,8 +1263,8 @@ export default function Home() {
                 <EyebrowLabel>Find Us in Kochi</EyebrowLabel>
                 <WordReveal
                   text="4 Stores. One Premium Experience."
-                  className="text-5xl md:text-6xl lg:text-[5rem] font-serif text-[#1C2951] leading-[0.9] tracking-[-0.03em] mb-8" />
-                <motion.p variants={fadeUp} className="text-[#1C2951]/52 text-lg leading-relaxed font-light mb-14">
+                  className="text-5xl md:text-6xl lg:text-[5rem] font-serif text-[#162D20] leading-[0.9] tracking-[-0.03em] mb-8" />
+                <motion.p variants={fadeUp} className="text-[#162D20]/52 text-lg leading-relaxed font-light mb-14">
                   Every Aeden Fresh store is designed to be Kochi's finest fresh grocery experience — bright, premium, and stocked with produce you won't find anywhere else in Kerala.
                 </motion.p>
               </Reveal>
@@ -1284,36 +1276,36 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "180px" }}
                     transition={{ delay: i * 0.09, duration: 0.75, ease: EASE_OUT }}
-                    className="group p-6 rounded-2xl border border-[#1C2951]/9 bg-white/60 hover:bg-white hover:border-gold/35 shadow-luxe hover:shadow-luxe-lg transition-all duration-400"
+                    className="group p-6 rounded-2xl border border-[#162D20]/9 bg-white/60 hover:bg-white hover:border-gold/35 shadow-luxe hover:shadow-luxe-lg transition-all duration-400"
                     whileHover={{ y: -3 }}
                     onMouseEnter={() => pushCursorLabel("MAP")}
                     onMouseLeave={() => pushCursorClear()}>
 
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-[#1C2951]/6 group-hover:bg-[#5C8C2F]/10 flex items-center justify-center transition-colors duration-300">
-                        <MapPin size={16} className="text-[#1C2951]/45 group-hover:text-[#5C8C2F] transition-colors duration-300" />
+                      <div className="w-10 h-10 rounded-xl bg-[#162D20]/6 group-hover:bg-[#237049]/10 flex items-center justify-center transition-colors duration-300">
+                        <MapPin size={16} className="text-[#162D20]/45 group-hover:text-[#237049] transition-colors duration-300" />
                       </div>
                       <span className={`text-[9.5px] font-bold tracking-[0.18em] uppercase rounded-full px-2.5 py-1 ${
                         store.label === "Flagship"
-                          ? "text-[#E8303A] bg-[#E8303A]/8"
-                          : "text-[#5C8C2F] bg-[#5C8C2F]/10"
+                          ? "text-[#237049] bg-[#237049]/8"
+                          : "text-[#237049] bg-[#237049]/10"
                       }`}>
                         {store.label}
                       </span>
                     </div>
 
-                    <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#1C2951]/35 mb-1">{store.area}</p>
-                    <p className="font-semibold text-[#1C2951] text-base mb-1">Aeden Fresh {store.name}</p>
-                    <p className="text-[#1C2951]/42 text-[13px] font-light mb-0.5">{store.address}</p>
-                    <p className="text-[#1C2951]/30 text-[12px] font-light mb-3">{store.pin}</p>
+                    <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-[#162D20]/35 mb-1">{store.area}</p>
+                    <p className="font-semibold text-[#162D20] text-base mb-1">Aeden Fresh {store.name}</p>
+                    <p className="text-[#162D20]/42 text-[13px] font-light mb-0.5">{store.address}</p>
+                    <p className="text-[#162D20]/30 text-[12px] font-light mb-3">{store.pin}</p>
 
                     <a href={`tel:${store.phone.replace(/\s/g, "")}`}
-                      className="inline-flex items-center gap-1.5 text-[#1C2951]/55 hover:text-[#1C2951] text-[12px] font-medium transition-colors duration-200 mb-1">
+                      className="inline-flex items-center gap-1.5 text-[#162D20]/55 hover:text-[#162D20] text-[12px] font-medium transition-colors duration-200 mb-1">
                       <Phone size={11} /> {store.phone}
                     </a>
 
                     <a href={store.maps} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 mt-3 text-[#5C8C2F] text-[12px] font-semibold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      className="flex items-center gap-1.5 mt-3 text-[#237049] text-[12px] font-semibold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       Get Directions <ExternalLink size={11} />
                     </a>
                   </motion.div>
@@ -1328,12 +1320,12 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.9, ease: EASE_OUT }}
-                className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2951]/12">
+                className="aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl shadow-[#162D20]/12">
                 <img
                   src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=900&q=82&auto=format&fit=crop"
                   alt="Aeden Fresh store interior" loading="lazy"
                   className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080f1e]/35 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#122119]/35 to-transparent" />
               </motion.div>
 
               {/* Floating badges */}
@@ -1342,7 +1334,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.65, delay: 0.32, ease: EASE_OUT }}
-                className="absolute -bottom-5 -right-5 bg-[#1C2951] text-white rounded-2xl px-7 py-5 shadow-2xl hidden md:block ring-4 ring-[#FAF7F2]">
+                className="absolute -bottom-5 -right-5 bg-[#162D20] text-white rounded-2xl px-7 py-5 shadow-2xl hidden md:block ring-4 ring-[#F9F7F1]">
                 <p className="text-[3.2rem] font-serif font-light leading-none">4</p>
                 <p className="text-[10px] tracking-[0.2em] uppercase text-white/45 mt-1.5">Premium Stores</p>
               </motion.div>
@@ -1352,7 +1344,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.65, delay: 0.45, ease: EASE_OUT }}
-                className="absolute -top-5 -left-5 bg-[#E8303A] text-white rounded-2xl px-6 py-4 shadow-xl hidden md:block ring-4 ring-[#FAF7F2]">
+                className="absolute -top-5 -left-5 bg-[#83B13E] text-[#122119] rounded-2xl px-6 py-4 shadow-xl hidden md:block ring-4 ring-[#F9F7F1]">
                 <p className="text-2xl font-serif leading-none">Est.</p>
                 <p className="text-3xl font-serif font-semibold leading-none">2010</p>
               </motion.div>
@@ -1362,7 +1354,7 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── FRANCHISE ───────────────────────── */}
-      <section id="franchise" className="bg-[#080f1e] py-32 lg:py-44 relative overflow-hidden">
+      <section id="franchise" className="bg-[#122119] py-32 lg:py-44 relative overflow-hidden">
         <div className="grain-overlay absolute inset-0 pointer-events-none" />
         <div className="absolute inset-0 flex items-center justify-end overflow-hidden pointer-events-none select-none pr-6">
           <span className="text-[18vw] font-serif font-bold text-white/[0.022] leading-none">OWN</span>
@@ -1381,14 +1373,14 @@ export default function Home() {
                 <img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=900&q=82&auto=format&fit=crop"
                   alt="Franchise opportunity" loading="lazy"
                   className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080f1e]/55 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#122119]/55 to-transparent" />
               </div>
               <motion.div
-                className="absolute -top-5 -right-5 bg-[#E8303A] text-white rounded-2xl p-6 shadow-2xl hidden md:block ring-4 ring-[#080f1e]"
+                className="absolute -top-5 -right-5 bg-[#83B13E] text-[#122119] rounded-2xl p-6 shadow-2xl hidden md:block ring-4 ring-[#122119]"
                 animate={{ y: [0, -7, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}>
                 <p className="text-[2.5rem] font-serif font-light leading-none">Own</p>
-                <p className="text-[11px] tracking-[0.18em] uppercase text-white/70 mt-1">an Aeden Fresh</p>
+                <p className="text-[11px] tracking-[0.18em] uppercase text-[#122119]/65 mt-1">an Aeden Fresh</p>
               </motion.div>
             </motion.div>
 
@@ -1413,8 +1405,8 @@ export default function Home() {
                   <motion.div key={i}
                     variants={{ hidden: { opacity: 0, x: -18 }, show: { opacity: 1, x: 0, transition: { duration: 0.6, ease: EASE_OUT } } }}
                     className="flex items-start gap-4 group">
-                    <div className="w-10 h-10 rounded-xl border border-white/9 bg-white/4 flex-shrink-0 flex items-center justify-center group-hover:border-[#5C8C2F]/40 group-hover:bg-[#5C8C2F]/10 transition-all duration-300">
-                      <Icon size={15} className="text-white/40 group-hover:text-[#5C8C2F] transition-colors duration-300" />
+                    <div className="w-10 h-10 rounded-xl border border-white/9 bg-white/4 flex-shrink-0 flex items-center justify-center group-hover:border-[#237049]/40 group-hover:bg-[#237049]/10 transition-all duration-300">
+                      <Icon size={15} className="text-white/40 group-hover:text-[#237049] transition-colors duration-300" />
                     </div>
                     <div>
                       <p className="text-white font-medium text-sm mb-0.5">{title}</p>
@@ -1426,7 +1418,7 @@ export default function Home() {
 
               <motion.div variants={fadeUp}>
                 <Magnetic href="#contact"
-                  className="bg-white text-[#080f1e] hover:bg-[#FAF7F2] rounded-full px-9 h-12 text-[14px] font-semibold inline-flex items-center gap-2 transition-colors duration-300 shadow-2xl">
+                  className="bg-white text-[#122119] hover:bg-[#F9F7F1] rounded-full px-9 h-12 text-[14px] font-semibold inline-flex items-center gap-2 transition-colors duration-300 shadow-2xl">
                   Enquire About Franchising <ArrowRight size={14} />
                 </Magnetic>
               </motion.div>
@@ -1436,7 +1428,7 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── OUR STORY ───────────────────────── */}
-      <section id="story" className="bg-[#FAF7F2] py-32 lg:py-44">
+      <section id="story" className="bg-[#F9F7F1] py-32 lg:py-44">
         <div className="section-container">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-14 lg:gap-24">
             <Reveal>
@@ -1444,7 +1436,7 @@ export default function Home() {
               <EyebrowLabel>Our Story</EyebrowLabel>
               <WordReveal
                 text="14 Years of Freshness in Kerala"
-                className="text-5xl md:text-6xl font-serif text-[#1C2951] leading-[0.9] tracking-[-0.03em]" />
+                className="text-5xl md:text-6xl font-serif text-[#162D20] leading-[0.9] tracking-[-0.03em]" />
             </Reveal>
 
             <div className="space-y-5">
@@ -1470,15 +1462,15 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "180px" }}
                   transition={{ duration: 0.78, delay: i * 0.11, ease: EASE_OUT }}
-                  className="group relative border border-[#1C2951]/8 bg-white/55 hover:bg-white hover:border-gold/30 shadow-luxe hover:shadow-luxe-lg rounded-2xl p-8 transition-all duration-450 cursor-default overflow-hidden">
-                  <motion.div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#E8303A] origin-top rounded-l-2xl"
+                  className="group relative border border-[#162D20]/8 bg-white/55 hover:bg-white hover:border-gold/30 shadow-luxe hover:shadow-luxe-lg rounded-2xl p-8 transition-all duration-450 cursor-default overflow-hidden">
+                  <motion.div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#83B13E] origin-top rounded-l-2xl"
                     initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }}
                     viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.18 + i * 0.1 }} />
                   <div className="flex items-start gap-6">
-                    <span className="flex-shrink-0 pt-1 text-[11px] font-bold tracking-[0.24em] uppercase text-[#E8303A]/55">{item.year}</span>
+                    <span className="flex-shrink-0 pt-1 text-[11px] font-bold tracking-[0.24em] uppercase text-[#237049]/70">{item.year}</span>
                     <div>
-                      <h3 className="text-xl font-serif text-[#1C2951] mb-3 group-hover:text-[#E8303A] transition-colors duration-300">{item.title}</h3>
-                      <p className="text-[#1C2951]/52 font-light leading-relaxed text-[15px]">{item.body}</p>
+                      <h3 className="text-xl font-serif text-[#162D20] mb-3 group-hover:text-[#237049] transition-colors duration-300">{item.title}</h3>
+                      <p className="text-[#162D20]/52 font-light leading-relaxed text-[15px]">{item.body}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -1489,7 +1481,7 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── JOURNAL ──────────────────────────── */}
-      <section className="bg-[#1C2951] py-32 lg:py-44 relative overflow-hidden">
+      <section className="bg-[#162D20] py-32 lg:py-44 relative overflow-hidden">
         <div className="grain-overlay absolute inset-0 pointer-events-none" />
         <div className="relative section-container">
           <Reveal className="max-w-xl mb-16">
@@ -1513,11 +1505,11 @@ export default function Home() {
                     whileHover={{ scale: 1.07 }} transition={{ duration: 0.8, ease: [0,0,0.2,1] }} />
                 </div>
                 <div className="flex items-center gap-2.5 mb-3">
-                  <span className="text-[#5C8C2F] text-[10px] font-bold tracking-[0.22em] uppercase">{post.cat}</span>
+                  <span className="text-[#237049] text-[10px] font-bold tracking-[0.22em] uppercase">{post.cat}</span>
                   <span className="w-1 h-1 rounded-full bg-white/18" />
                   <span className="text-white/28 text-[10px] tracking-wide">{post.read} read</span>
                 </div>
-                <h3 className="text-[1.2rem] font-serif text-white leading-snug group-hover:text-[#E8303A] transition-colors duration-300">
+                <h3 className="text-[1.2rem] font-serif text-white leading-snug group-hover:text-[#83B13E] transition-colors duration-300">
                   {post.title}
                 </h3>
                 <motion.div className="h-px bg-white/9 mt-5 origin-left"
@@ -1530,13 +1522,13 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── FAQ ──────────────────────────────── */}
-      <section className="bg-[#FAF7F2] py-32 lg:py-44">
+      <section className="bg-[#F9F7F1] py-32 lg:py-44">
         <div className="section-container grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24">
           <Reveal>
             <RedRule />
             <EyebrowLabel>Questions</EyebrowLabel>
             <WordReveal text="Everything You Need to Know"
-              className="text-5xl md:text-6xl font-serif text-[#1C2951] leading-[0.9] tracking-[-0.03em]" />
+              className="text-5xl md:text-6xl font-serif text-[#162D20] leading-[0.9] tracking-[-0.03em]" />
           </Reveal>
 
           <Accordion type="single" collapsible className="space-y-3">
@@ -1547,12 +1539,12 @@ export default function Home() {
                 viewport={{ once: true, margin: "180px" }}
                 transition={{ delay: i * 0.07, duration: 0.65, ease: EASE_OUT }}>
                 <AccordionItem value={`faq-${i}`}
-                  className="border border-[#1C2951]/8 bg-white/55 hover:bg-white rounded-2xl overflow-hidden px-6 transition-colors duration-300">
+                  className="border border-[#162D20]/8 bg-white/55 hover:bg-white rounded-2xl overflow-hidden px-6 transition-colors duration-300">
                   <AccordionTrigger
-                    className="text-[#1C2951] text-left font-medium text-[15px] py-5 hover:no-underline hover:text-[#E8303A] transition-colors [&>svg]:text-[#1C2951]/28 [&>svg]:flex-shrink-0">
+                    className="text-[#162D20] text-left font-medium text-[15px] py-5 hover:no-underline hover:text-[#237049] transition-colors [&>svg]:text-[#162D20]/28 [&>svg]:flex-shrink-0">
                     {q}
                   </AccordionTrigger>
-                  <AccordionContent className="text-[#1C2951]/52 font-light leading-relaxed pb-5 text-[15px]">
+                  <AccordionContent className="text-[#162D20]/52 font-light leading-relaxed pb-5 text-[15px]">
                     {a}
                   </AccordionContent>
                 </AccordionItem>
@@ -1563,7 +1555,7 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── CONTACT ──────────────────────────── */}
-      <section id="contact" className="bg-[#080f1e] py-32 lg:py-44 relative overflow-hidden">
+      <section id="contact" className="bg-[#122119] py-32 lg:py-44 relative overflow-hidden">
         <div className="grain-overlay absolute inset-0 pointer-events-none" />
         <div className="relative section-container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24">
@@ -1584,8 +1576,8 @@ export default function Home() {
                   { icon: Globe,  label: "Sourcing Partner",  value: "aedenfruits.com" },
                 ].map(({ icon: Icon, label, value }) => (
                   <motion.div key={label} variants={fadeUp} className="flex items-center gap-5 group">
-                    <div className="w-11 h-11 rounded-xl border border-white/9 bg-white/4 flex-shrink-0 flex items-center justify-center group-hover:border-[#5C8C2F]/38 group-hover:bg-[#5C8C2F]/9 transition-all duration-300">
-                      <Icon size={15} className="text-white/38 group-hover:text-[#5C8C2F] transition-colors duration-300" />
+                    <div className="w-11 h-11 rounded-xl border border-white/9 bg-white/4 flex-shrink-0 flex items-center justify-center group-hover:border-[#237049]/38 group-hover:bg-[#237049]/9 transition-all duration-300">
+                      <Icon size={15} className="text-white/38 group-hover:text-[#237049] transition-colors duration-300" />
                     </div>
                     <div>
                       <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/22 mb-0.5">{label}</p>
@@ -1631,9 +1623,9 @@ export default function Home() {
               <div>
                 <label className="text-[10px] font-semibold tracking-[0.22em] uppercase text-white/28 block mb-2">I'm interested in…</label>
                 <select className="w-full bg-white/5 border border-white/9 text-white/62 rounded-xl h-12 px-4 text-sm focus:outline-none focus:border-white/28 appearance-none transition-colors">
-                  <option value="" className="bg-[#080f1e]">Select an option</option>
+                  <option value="" className="bg-[#122119]">Select an option</option>
                   {["Franchise Partnership", "Investment Opportunity", "Store Location Query", "Wholesale / Bulk Order", "General Enquiry"].map(o => (
-                    <option key={o} className="bg-[#080f1e]">{o}</option>
+                    <option key={o} className="bg-[#122119]">{o}</option>
                   ))}
                 </select>
               </div>
@@ -1645,7 +1637,7 @@ export default function Home() {
               </div>
 
               <motion.button type="submit"
-                className="w-full bg-[#E8303A] hover:bg-[#cc2b34] text-white rounded-xl h-12 text-[14px] font-semibold tracking-wide transition-colors duration-300 shadow-2xl shadow-red-900/25"
+                className="w-full bg-[#83B13E] hover:bg-[#A1CF58] text-[#122119] rounded-xl h-12 text-[14px] font-bold tracking-wide transition-colors duration-300 shadow-2xl shadow-green-950/25"
                 whileHover={{ scale: 1.008 }} whileTap={{ scale: 0.996 }}>
                 Send Message
               </motion.button>
@@ -1655,7 +1647,7 @@ export default function Home() {
       </section>
 
       {/* ─────────────────── FOOTER ───────────────────────────── */}
-      <footer className="bg-[#03080f] py-20">
+      <footer className="bg-[#07180F] py-20">
         <div className="section-container">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
             <div className="md:col-span-2">
@@ -1725,7 +1717,7 @@ export default function Home() {
           <motion.button
             initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="fixed bottom-8 right-8 w-12 h-12 bg-[#E8303A] text-white rounded-full flex items-center justify-center shadow-2xl shadow-red-900/35 z-50 hover:bg-[#1C2951] transition-colors duration-300"
+            className="fixed bottom-8 right-8 w-12 h-12 bg-[#83B13E] text-[#122119] rounded-full flex items-center justify-center shadow-2xl shadow-green-950/35 z-50 hover:bg-[#162D20] hover:text-white transition-colors duration-300"
             whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
             <ArrowUp size={16} />
           </motion.button>

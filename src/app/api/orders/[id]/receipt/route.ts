@@ -45,14 +45,16 @@ export async function GET(
 
   const { data: items } = await db
     .from("order_items")
-    .select("quantity, unit_price, line_total, option_ids, curated_basket_id")
+    .select("quantity, unit_price, line_total, option_ids, curated_basket_id, retail_product_id, product_name_snapshot, unit_label_snapshot")
     .eq("order_id", id);
 
   // Resolve display names for line items
   const lines: { label: string; qty: number; unit: number; total: number }[] = [];
   for (const item of items ?? []) {
     let label = "Custom Salad";
-    if (item.curated_basket_id) {
+    if (item.retail_product_id) {
+      label = `${item.product_name_snapshot ?? "Fresh grocery"}${item.unit_label_snapshot ? ` · ${item.unit_label_snapshot}` : ""}`;
+    } else if (item.curated_basket_id) {
       const { data: b } = await db
         .from("curated_baskets")
         .select("name")
@@ -96,7 +98,7 @@ export async function GET(
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Receipt ${esc(order.order_number)} · Aeden Fresh</title>
 <style>
-  :root { --navy:#1C2951; --red:#E8303A; --leaf:#5C8C2F; --cream:#FAF7F2; }
+  :root { --navy:#162D20; --red:#83B13E; --leaf:#237049; --cream:#F9F7F1; }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background:var(--cream); color:var(--navy); padding:32px 16px; }
   .sheet { max-width:640px; margin:0 auto; background:#fff; border-radius:16px; padding:40px; box-shadow:0 24px 48px -12px rgba(16,24,40,.16); }
@@ -111,7 +113,7 @@ export async function GET(
   td.num, th.num { text-align:right; white-space:nowrap; }
   .totals td { border:none; padding:4px 0; }
   .grand { font-family: Georgia, serif; font-size:22px; color:var(--red); }
-  .badge { display:inline-block; background:#5C8C2F1a; color:var(--leaf); font-size:11px; font-weight:600; padding:4px 10px; border-radius:99px; text-transform:uppercase; letter-spacing:.08em; }
+  .badge { display:inline-block; background:#2370491a; color:var(--leaf); font-size:11px; font-weight:600; padding:4px 10px; border-radius:99px; text-transform:uppercase; letter-spacing:.08em; }
   @media print { body { background:#fff; padding:0 } .sheet { box-shadow:none } }
 </style>
 </head>

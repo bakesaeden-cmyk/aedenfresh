@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { MapPin, Clock, Phone, ExternalLink, Navigation, ChevronRight, X } from "lucide-react";
+import { MapPin, Clock, Phone, ExternalLink, Navigation, ChevronRight, X, ArrowRight, Leaf } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
@@ -16,7 +16,7 @@ const STORES = [
     id: 0,
     name: "Kadavanthara",
     label: "Flagship",
-    labelColor: "#E8303A",
+    labelColor: "#83B13E",
     area: "Central Kochi",
     address: "Kadavanthara, Ernakulam, Kochi",
     pin: "Kerala 682020",
@@ -35,7 +35,7 @@ const STORES = [
     id: 1,
     name: "Kacheripady",
     label: "Open",
-    labelColor: "#5C8C2F",
+    labelColor: "#237049",
     area: "Central Kochi",
     address: "Kacheripady Junction, Ernakulam, Kochi",
     pin: "Kerala 682018",
@@ -54,7 +54,7 @@ const STORES = [
     id: 2,
     name: "Thrippunithura",
     label: "Open",
-    labelColor: "#5C8C2F",
+    labelColor: "#237049",
     area: "South Ernakulam",
     address: "Thrippunithura Junction, Ernakulam, Kochi",
     pin: "Kerala 682301",
@@ -73,7 +73,7 @@ const STORES = [
     id: 3,
     name: "Kakkanad",
     label: "Open",
-    labelColor: "#5C8C2F",
+    labelColor: "#237049",
     area: "IT Hub",
     address: "Near Infopark Junction, Kakkanad, Kochi",
     pin: "Kerala 682030",
@@ -136,7 +136,7 @@ function StoreMap({
 
       // Custom SVG pin markers
       const makeIcon = (store: typeof STORES[0], active: boolean) => {
-        const color = active ? store.labelColor : "#1C2951";
+        const color = active ? store.labelColor : "#162D20";
         const scale = active ? 1.25 : 1;
         const svg = `
           <svg xmlns="http://www.w3.org/2000/svg" width="${32 * scale}" height="${42 * scale}" viewBox="0 0 32 42">
@@ -183,7 +183,7 @@ function StoreMap({
         const marker = markersRef.current[store.id];
         if (!marker) return;
         const isActive = store.id === activeId;
-        const color = isActive ? store.labelColor : "#1C2951";
+        const color = isActive ? store.labelColor : "#162D20";
         const scale = isActive ? 1.25 : 1;
         const svg = `
           <svg xmlns="http://www.w3.org/2000/svg" width="${32 * scale}" height="${42 * scale}" viewBox="0 0 32 42">
@@ -222,28 +222,27 @@ function StoreCard({
   onClick: () => void;
 }) {
   return (
-    <motion.button
-      onClick={onClick}
+    <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: store.id * 0.08, duration: 0.6, ease: EASE_OUT }}
       className={`w-full text-left rounded-2xl border transition-all duration-300 overflow-hidden group
         ${isActive
-          ? "border-[#1C2951] shadow-xl shadow-[#1C2951]/10 bg-white"
-          : "border-stone-200 bg-white hover:border-[#1C2951]/40 hover:shadow-md"
-        }`}
+          ? "border-[#162D20] shadow-xl shadow-[#162D20]/10 bg-white"
+          : "border-stone-200 bg-white hover:border-[#162D20]/40 hover:shadow-md"
+      }`}
     >
       {/* Number + name row */}
-      <div className="flex items-stretch">
+      <button type="button" onClick={onClick} aria-expanded={isActive} className="flex w-full items-stretch text-left">
         <div
           className="w-12 flex-shrink-0 flex items-center justify-center text-white font-serif text-xl font-light"
-          style={{ backgroundColor: isActive ? store.labelColor : "#1C2951" }}
+          style={{ backgroundColor: isActive ? store.labelColor : "#162D20" }}
         >
           {store.id + 1}
         </div>
         <div className="flex-1 px-4 py-3.5">
           <div className="flex items-center gap-2 mb-0.5">
-            <h3 className="font-serif text-[#1C2951] text-lg leading-tight">{store.name}</h3>
+            <h3 className="font-serif text-[#162D20] text-lg leading-tight">{store.name}</h3>
             <span
               className="text-[9px] font-bold tracking-[0.18em] uppercase px-2 py-0.5 rounded-full"
               style={{
@@ -257,9 +256,9 @@ function StoreCard({
           <p className="text-stone-400 text-[12px]">{store.area}</p>
         </div>
         <div className={`flex items-center pr-4 transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-50"}`}>
-          <ChevronRight size={16} className="text-[#1C2951]" />
+          <ChevronRight size={16} className="text-[#162D20]" />
         </div>
-      </div>
+      </button>
 
       {/* Expanded detail */}
       <AnimatePresence initial={false}>
@@ -297,7 +296,7 @@ function StoreCard({
               {/* Phone */}
               <div className="flex gap-2.5 mb-4">
                 <Phone size={14} className="text-stone-400 mt-0.5 flex-shrink-0" />
-                <a href={`tel:${store.phone}`} className="text-[#1C2951] text-[13px] font-medium hover:underline">
+                <a href={`tel:${store.phone}`} className="text-[#162D20] text-[13px] font-medium hover:underline">
                   {store.phone}
                 </a>
               </div>
@@ -311,7 +310,7 @@ function StoreCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-2 bg-[#1C2951] hover:bg-[#2a3d6e] text-white rounded-full px-5 h-9 text-[12px] font-semibold transition-colors duration-200"
+                className="inline-flex items-center gap-2 bg-[#162D20] hover:bg-[#2E5A3F] text-white rounded-full px-5 h-9 text-[12px] font-semibold transition-colors duration-200"
               >
                 <Navigation size={12} />
                 Get Directions
@@ -321,7 +320,7 @@ function StoreCard({
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.button>
+    </motion.div>
   );
 }
 
@@ -343,7 +342,7 @@ function MobileStoreDrawer({
       <div className="flex items-start justify-between mb-4">
         <div>
           <div className="flex items-center gap-2 mb-0.5">
-            <h3 className="font-serif text-[#1C2951] text-2xl">{store.name}</h3>
+            <h3 className="font-serif text-[#162D20] text-2xl">{store.name}</h3>
             <span
               className="text-[9px] font-bold tracking-[0.18em] uppercase px-2 py-0.5 rounded-full"
               style={{ backgroundColor: `${store.labelColor}15`, color: store.labelColor }}
@@ -353,7 +352,7 @@ function MobileStoreDrawer({
           </div>
           <p className="text-stone-400 text-sm">{store.area}</p>
         </div>
-        <button onClick={onClose} className="p-2 rounded-full hover:bg-stone-100 transition-colors">
+        <button onClick={onClose} aria-label="Close store details" className="p-2 rounded-full hover:bg-stone-100 transition-colors">
           <X size={18} className="text-stone-500" />
         </button>
       </div>
@@ -379,7 +378,7 @@ function MobileStoreDrawer({
         </div>
         <div className="flex gap-2.5">
           <Phone size={15} className="text-stone-400 mt-0.5 flex-shrink-0" />
-          <a href={`tel:${store.phone}`} className="text-[#1C2951] text-sm font-medium">{store.phone}</a>
+          <a href={`tel:${store.phone}`} className="text-[#162D20] text-sm font-medium">{store.phone}</a>
         </div>
       </div>
 
@@ -389,7 +388,7 @@ function MobileStoreDrawer({
         href={store.maps}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 bg-[#1C2951] text-white rounded-full w-full h-12 text-sm font-semibold"
+        className="flex items-center justify-center gap-2 bg-[#162D20] text-white rounded-full w-full h-12 text-sm font-semibold"
       >
         <Navigation size={14} />
         Get Directions
@@ -408,9 +407,9 @@ export default function Stores() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] font-sans">
+    <div className="min-h-screen bg-[#F9F7F1] font-sans">
       {/* ── NAV ── */}
-      <header className="fixed top-0 inset-x-0 z-[100] bg-white/90 backdrop-blur-xl border-b border-stone-100">
+      <header className="fixed top-0 inset-x-0 z-[100] bg-[#F9F7F1]/92 backdrop-blur-xl border-b border-[#162D20]/8">
         <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between gap-4">
           <Link href="/">
             <img
@@ -420,24 +419,19 @@ export default function Stores() {
             />
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/" className="hidden md:inline-flex text-[13px] text-stone-500 hover:text-[#1C2951] transition-colors font-medium gap-1 items-center">
+            <Link href="/" className="hidden md:inline-flex text-[13px] text-stone-500 hover:text-[#162D20] transition-colors font-medium gap-1 items-center">
               ← Back to Home
             </Link>
-            <Link href="/shop" className="hidden md:inline-flex text-[13px] text-stone-500 hover:text-[#1C2951] transition-colors font-medium">
-              Shop Online
+            <a href="#locations" className="hidden sm:inline-flex text-[13px] text-stone-500 hover:text-[#162D20] transition-colors font-medium">Store map</a>
+            <Link href="/shop" className="bg-[#83B13E] hover:bg-[#A1CF58] text-[#122119] rounded-full px-5 h-9 text-[12px] font-bold inline-flex items-center gap-2 transition-colors shadow-lg shadow-green-950/20">
+              Shop Fresh <ArrowRight size={13} />
             </Link>
-            <a
-              href="#locations"
-              className="bg-[#E8303A] hover:bg-[#cc2b34] text-white rounded-full px-5 h-9 text-[12px] font-semibold inline-flex items-center transition-colors"
-            >
-              Find a Store
-            </a>
           </div>
         </div>
       </header>
 
       {/* ── HERO ── */}
-      <section className="relative pt-[72px] bg-[#1C2951] overflow-hidden">
+      <section className="relative pt-[72px] bg-[#162D20] overflow-hidden">
         <div className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: "url(https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=1200&q=60&auto=format&fit=crop)",
@@ -458,7 +452,7 @@ export default function Stores() {
             transition={{ duration: 0.8, ease: EASE_OUT }}
             className="font-serif text-white text-5xl md:text-6xl leading-tight mb-3"
           >
-            Visit Us in Kochi
+            Four neighbourhoods.<br /><span className="italic text-[#A6D55E]">One fresh standard.</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -466,7 +460,7 @@ export default function Stores() {
             transition={{ duration: 0.8, delay: 0.1, ease: EASE_OUT }}
             className="text-white/55 text-base max-w-lg leading-relaxed"
           >
-            4 premium stores across Ernakulam — each stocked with the freshest imports and daily-local produce.
+            Discover exceptional imports, daily-local produce and a store experience designed to make fresh food feel inspiring again.
           </motion.p>
 
           {/* Quick store pills */}
@@ -482,7 +476,7 @@ export default function Stores() {
                 onClick={() => setActiveId(s.id)}
                 className={`text-[12px] font-medium px-4 h-8 rounded-full border transition-all duration-200
                   ${activeId === s.id
-                    ? "bg-white text-[#1C2951] border-white"
+                    ? "bg-white text-[#162D20] border-white"
                     : "bg-white/8 text-white/70 border-white/20 hover:bg-white/15"
                   }`}
               >
@@ -536,14 +530,14 @@ export default function Stores() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.07, duration: 0.55, ease: EASE_OUT }}
               className={`relative rounded-2xl overflow-hidden aspect-[4/3] group
-                ${activeId === store.id ? "ring-2 ring-[#1C2951] ring-offset-2" : ""}`}
+                ${activeId === store.id ? "ring-2 ring-[#162D20] ring-offset-2" : ""}`}
             >
               <img
                 src={store.img}
                 alt={`Aeden Fresh ${store.name}`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1C2951]/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#162D20]/80 to-transparent" />
               <div className="absolute bottom-0 inset-x-0 p-3">
                 <p className="text-white font-serif text-sm leading-tight">{store.name}</p>
                 <p className="text-white/60 text-[10px]">{store.area}</p>
@@ -559,13 +553,30 @@ export default function Stores() {
         </div>
       </section>
 
+      {/* ── COMMERCE BRIDGE ── */}
+      <section className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="relative overflow-hidden rounded-[2rem] bg-[#162D20] px-6 py-9 text-white shadow-xl md:px-10 md:py-11">
+          <div className="absolute -right-14 -top-20 h-64 w-64 rounded-full bg-[#83B13E]/20 blur-3xl" />
+          <div className="relative flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="mb-3 flex items-center gap-2 text-[10px] font-bold tracking-[0.22em] text-[#A6D55E] uppercase"><Leaf size={13} /> Fresh Commerce by Aeden</p>
+              <h2 className="font-serif text-3xl leading-tight md:text-4xl">Can’t make it to a store? Let fresh come to you.</h2>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-white/58">Build personalised bowls, choose a chef-made favourite, or set a delivery rhythm around your week.</p>
+            </div>
+            <Link href="/shop" className="inline-flex h-12 shrink-0 items-center gap-2 self-start rounded-full bg-[#83B13E] px-7 text-sm font-bold text-[#122119] transition-colors hover:bg-[#A1CF58] lg:self-auto">
+              Explore Fresh Commerce <ArrowRight size={15} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── FOOTER NOTE ── */}
-      <div className="border-t border-stone-200 bg-white py-8">
+      <div className="border-t border-[#162D20]/8 bg-white/65 py-8">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-stone-400 text-sm">
-            All stores are <span className="text-[#5C8C2F] font-medium">open today</span>. Hours may vary on public holidays.
+            All stores are <span className="text-[#237049] font-medium">open today</span>. Hours may vary on public holidays.
           </p>
-          <Link href="/products" className="text-[#1C2951] text-sm font-medium hover:underline inline-flex items-center gap-1">
+          <Link href="/products" className="text-[#162D20] text-sm font-medium hover:underline inline-flex items-center gap-1">
             Browse Our Products <ChevronRight size={14} />
           </Link>
         </div>
